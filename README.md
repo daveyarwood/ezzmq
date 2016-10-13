@@ -1,5 +1,7 @@
 # ezzmq
 
+[![Clojars Project](https://img.shields.io/clojars/v/io.djy/ezzmq.svg)](https://clojars.org/io.djy/ezzmq)
+
 A small library of opinionated [ZeroMQ](http://zeromq.org) boilerplate for Clojure.
 
 ## Background
