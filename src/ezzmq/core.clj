@@ -14,6 +14,12 @@
     :zmq-context (ZMQ/context 1)
     (throw (Exception. (format "Invalid context type: %s" *context-type*)))))
 
+(require '[clojure.test :refer :all])
+
+(deftest random-test
+  (testing "math"
+    (is (= 2 (+ 1 1)))))
+
 (defprotocol SocketMaker
   (create-socket [ctx socket-type]))
 
@@ -34,7 +40,7 @@
   Destroyable
   (destroy-context! [ctx] (.term ctx)))
 
-(defmacro with-zmq-context
+(defmacro with-context
   "Executes `body` given an existing ZMQ context `ctx`.
 
    When done, closes all sockets and destroys the context."
@@ -43,12 +49,12 @@
      ~@body
      (destroy-context! *context*)))
 
-(defmacro with-new-zmq-context
+(defmacro with-new-context
   "Executes `body` using a one-off ZMQ context.
 
    When done, closes all sockets and destroys the context."
   [& body]
-  `(binding [*context* (zmq-context)]
+  `(binding [*context* (context)]
      ~@body
      (destroy-context! *context*)))
 
