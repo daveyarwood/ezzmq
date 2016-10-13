@@ -11,7 +11,11 @@
     (dotimes [n 5]
       (let [msg (zmq/receive-msg socket :stringify true)]
         (println (format "SERVER: Received msg: %s" msg))
-        (zmq/send-msg socket (format "Hello #%s from server" (inc n)))))))
+        (zmq/send-msg socket (format "Hello #%s from server" (inc n)))))
+    (dotimes [n 3]
+      (let [msg (zmq/receive-msg socket :stringify true)]
+        (println (format "SERVER: Received msg: %s" msg))
+        (zmq/send-msg socket msg)))))
 
 (use-fixtures :once
   (fn [run-tests]
@@ -31,5 +35,14 @@
           (zmq/send-msg socket (format "Hello #%s from client" (inc n)))
           (let [msg (zmq/receive-msg socket :stringify true)]
             (println (format "CLIENT: Received msg: %s" msg))
-            (is (= [(format "Hello #%s from server" (inc n))] msg))))))))
+            (is (= [(format "Hello #%s from server" (inc n))] msg)))))
+      (testing "can send and receive multi-part messages"
+        (doseq [req [["just" "strings"]
+                     (map #(.getBytes %) ["only" "byte" "arrays"])
+                     (concat ["some" "strings" "and"]
+                             (map #(.getBytes %) ["some" "byte" "arrays"]))]]
+          (zmq/send-msg socket req)
+          (let [res (zmq/receive-msg socket :stringify true)]
+            (println (format "CLIENT: Received msg: %s" res))
+            (is (= res (map #(String. %) req)))))))))
 
