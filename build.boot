@@ -13,7 +13,7 @@
 (bootlaces! +version+)
 
 (task-options!
-  pom {:project 'ezzmq
+  pom {:project 'io.djy/ezzmq
        :version +version+
        :description "A small library of opinionated ZeroMQ boilerplate for Clojure"
        :url "https://github.com/daveyarwood/ezzmq"
