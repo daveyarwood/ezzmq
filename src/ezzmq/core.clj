@@ -1,5 +1,6 @@
 (ns ezzmq.core
-  (:import [org.zeromq ZMQ ZContext ZMsg]))
+  (:require [wall.hack])
+  (:import  [org.zeromq ZMQ ZContext ZMsg]))
 
 ;;; CONTEXT ;;;
 
@@ -38,7 +39,17 @@
   (create-socket [ctx socket-type] (.socket ctx socket-type))
 
   Destroyable
-  (destroy-context! [ctx] (.term ctx)))
+  (destroy-context! [context]
+    ; ZMQ$Contexts don't automatically close their sockets when you terminate
+    ; them; they block until you do it manually.
+    ;
+    ; The array of sockets is hidden inside of an inner Ctx instance, and both
+    ; of these fields are private, so we have to use wallhaxx to get to them.
+    (let [ctx     (wall.hack/field org.zeromq.ZMQ$Context :ctx context)
+          sockets (wall.hack/field zmq.Ctx :sockets ctx)]
+      (doseq [socket sockets]
+        (.close socket)))
+    (.term context)))
 
 (defmacro with-context
   "Executes `body` given an existing ZMQ context `ctx`.

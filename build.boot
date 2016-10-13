@@ -3,13 +3,14 @@
   :resource-paths #{"test"}
   :dependencies '[[org.clojure/clojure "1.8.0"]
                   [org.zeromq/jeromq   "0.3.5"]
+                  [clj-wallhack        "1.0.1"]
                   [adzerk/bootlaces    "0.1.13" :scope "test"]
                   [adzerk/boot-test    "1.1.2"]])
 
 (require '[adzerk.boot-test :refer :all]
          '[adzerk.bootlaces :refer :all])
 
-(def +version+ "0.1.0")
+(def +version+ "0.1.1")
 (bootlaces! +version+)
 
 (task-options!
