@@ -46,6 +46,84 @@ I'm not trying to make a "one size fits all" library. ezzmq exists to fill a nic
 
 If you're on board with these opinions, then ezzmq will probably be up your alley!
 
+## Usage
+
+### ZMQ Context
+
+Any program you write that uses ZMQ will involve working with sockets. To create and manage sockets, you need a **context**.
+
+In JeroMQ (the pure-Java ZMQ library on which ezzmq is based), there are at least two different types of contexts you can use. ZContext is the newest and recommended way to create a context, whereas ZMQ.Context is legacy and will probably be deprecated in the near future.
+
+ezzmq uses ZContext by default, but you can bind `ezzmq.core/*context-type*` to `:zmq-context` to use a ZMQ.Context instead if you want.
+
+The typical workflow of a single ZMQ thread or process is this:
+
+- Create a context.
+- Use the context to create one or more sockets.
+- Bind/connect the sockets to ports.
+- Send/receive messages to/from the socket in a loop until either some condition is met (e.g. receiving a "stop" message of some kind on a socket) or the thread/process is interrupted.
+- Close all the sockets.
+- Destroy the context.
+
+ezzmq handles creating a context and eventually shutting down the context, including closing all of its sockets, for you so you don't have to worry about it. All you have to do is use the `ezzmq.core/with-new-context` macro and do all of your work inside of its scope:
+
+```clojure
+(require '[ezzmq.core :as zmq])
+
+(zmq/with-new-context
+  (comment "do work here"))
+```
+
+Once all the work is done, any sockets created will be closed and the context will be destroyed.
+
+### Sockets
+
+Use the `ezzmq.core/socket` function to create and bind/connect sockets in a single function call. You should use a `let` binding so you have a reference to the sockets and can interact with them later:
+
+```clojure
+(zmq/with-new-context
+  (let [socket (zmq/socket :rep {:bind "tcp://*:12345"})]
+    (comment "do stuff with socket here")))
+```
+
+### Messages
+
+ZeroMQ messages can be single- or multipart. In low-level usage of ZeroMQ, if a message is multipart you have to keep receiving message frames manually until there are no more parts to receive.
+
+ezzmq simplifies this by representing a message as a vector of frames. When you receive a message and the message contains multiple parts, you don't have to call `receive-msg` again, you just get the whole thing.
+
+Each frame is a byte array by default.
+
+To receive a message, use `ezzmq.core/receive-msg`:
+
+```clojure
+(zmq/with-new-context
+  (let [socket (zmq/socket :rep {:bind "tcp://*:12345"})]
+    (while true
+      (let [msg (zmq/receive-msg socket)]
+        (comment "do something with msg")))))
+```
+
+`(zmq/receive-msg socket)` will return a vector of byte arrays, where each byte array is one frame of the message.
+
+`(zmq/receive-msgs socket :stringify true)` will return a vector of strings. This is convenient when you know the message frames are supposed to be strings.
+
+To send a message, use `ezzmq.core/send-msg`:
+
+```clojure
+(zmq/with-new-context
+  (let [socket (zmq/socket :rep {:bind "tcp://*:12345"})]
+    (while true
+      (let [msg (zmq/receive-msg socket)]
+        (zmq/send-msg socket "This is my response to your message.")))))
+```
+
+The message you send can either be a single string, a single byte array, or a sequence containing any combination of strings and byte arrays:
+
+```clojure
+(zmq/send-msg socket ["this" "is" "a" "multipart" (.getBytes "message")])
+```
+
 ## Contributing
 
 If you like the direction I'm going with this library and you have things you'd like to do with it that it currently can't do, please [file an issue](https://github.com/daveyarwood/ezzmq/issues) and we'll figure it out together. I want ezzmq to be an awesome and sensible way to build ZeroMQ apps in Clojure.
