@@ -124,6 +124,8 @@ The message you send can either be a single string, a single byte array, or a se
 (zmq/send-msg socket ["this" "is" "a" "multipart" (.getBytes "message")])
 ```
 
+To see some practical examples of how to use ezzmq, you may be interested in checking out [these implementations](https://github.com/daveyarwood/ezzmq/tree/master/examples/zguide) of the official ZeroMQ [ZGuide](http://zguide.zeromq.org/) examples.
+
 ## Contributing
 
 If you like the direction I'm going with this library and you have things you'd like to do with it that it currently can't do, please [file an issue](https://github.com/daveyarwood/ezzmq/issues) and we'll figure it out together. I want ezzmq to be an awesome and sensible way to build ZeroMQ apps in Clojure.
