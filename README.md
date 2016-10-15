@@ -86,6 +86,24 @@ Use the `ezzmq.core/socket` function to create and bind/connect sockets in a sin
     (comment "do stuff with socket here")))
 ```
 
+In the case of SUB sockets, you can also set the subscribed topic(s) in this step via the `:subscribe` key:
+
+```clojure
+(zmq/with-new-context
+  (let [socket (zmq/socket :sub {:connect   "tcp://*:12345"
+                                 :subscribe "foo"})]
+    (comment "do stuff with socket here")))
+```
+
+The value for `:subscribe` can be either a string, a byte array, or a collection consisting of any combination of strings and byte arrays, each representing one subscription:
+
+```clojure
+(zmq/with-new-context
+  (let [socket (zmq/socket :sub {:connect   "tcp://*:12345"
+                                 :subscribe ["foo" "bar" "baz"]})]
+    (comment "do stuff with socket here")))
+```
+
 ### Messages
 
 ZeroMQ messages can be single- or multipart. In low-level usage of ZeroMQ, if a message is multipart you have to keep receiving message frames manually until there are no more parts to receive.
