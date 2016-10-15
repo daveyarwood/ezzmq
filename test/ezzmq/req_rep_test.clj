@@ -1,4 +1,4 @@
-(ns ezzmq.zguide.hwserver-hwclient-test
+(ns ezzmq.req-rep-test
   (:require [clojure.test    :refer :all]
             [ezzmq.core      :as     zmq]
             [ezzmq.test-util :as     util]))
@@ -34,12 +34,12 @@
         (println "Running tests using ZMQ.Context...")
         (test-run)))))
 
-(deftest hello-world-tests
-  (testing "hwclient"
+(deftest req-rep-tests
+  (testing "a REQ client"
     (let [socket (zmq/socket :req {:connect (format "tcp://*:%s" *port*)})]
-      (testing "can connect to hwserver"
+      (testing "can connect to a REP server"
         (is (= org.zeromq.ZMQ$Socket (type socket))))
-      (testing "can send and receive messages to/from hwserver"
+      (testing "can send and receive messages to/from a REP server"
         (dotimes [n 5]
           (zmq/send-msg socket (format "Hello #%s from client" (inc n)))
           (let [msg (zmq/receive-msg socket :stringify true)]

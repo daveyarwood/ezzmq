@@ -21,7 +21,8 @@
        :scm {:url "https://github.com/daveyarwood/ezzmq"}
        :license {"name" "Eclipse Public License"
                  "url"  "http://www.eclipse.org/legal/epl-v10.html"}}
-  test {:namespaces '#{ezzmq.zguide.hwserver-hwclient-test}})
+  test {:namespaces '#{ezzmq.pub-sub-test
+                       ezzmq.req-rep-test}})
 
 (deftask deploy
   "Builds uberjar, installs it to local Maven repo, and deploys it to Clojars."
