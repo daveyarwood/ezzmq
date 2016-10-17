@@ -92,12 +92,18 @@
   (if-let [socket-type (get socket-types socket-type)]
     (let [socket (create-socket *context* socket-type)
           {:keys [bind connect subscribe]} opts]
-      (when bind (.bind socket bind))
-      (when connect (.connect socket connect))
+      (when bind
+        (let [bindings (if (coll? bind) bind [bind])]
+          (doseq [b bindings]
+            (.bind socket b))))
+      (when connect
+        (let [connections (if (coll? connect) connect [connect])]
+          (doseq [c connections]
+            (.connect socket c))))
       (when subscribe
         (let [topics (if (coll? subscribe) subscribe [subscribe])]
-          (doseq [x topics]
-            (let [topic (if (string? x) (.getBytes x) x)]
+          (doseq [t topics]
+            (let [topic (if (string? t) (.getBytes t) t)]
               (.subscribe socket topic)))))
       socket)
     (throw (Exception. (format "Invalid socket type: %s" socket-type)))))

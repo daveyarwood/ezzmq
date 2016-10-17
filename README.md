@@ -86,6 +86,8 @@ Use the `ezzmq.core/socket` function to create and bind/connect sockets in a sin
     (comment "do stuff with socket here")))
 ```
 
+The values for `:bind` and `:connect` can be either strings or collections of strings, each representing an address to bind/connect with that socket.
+
 In the case of SUB sockets, you can also set the subscribed topic(s) in this step via the `:subscribe` key:
 
 ```clojure
