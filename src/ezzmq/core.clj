@@ -48,7 +48,9 @@
     (let [ctx     (wall.hack/field org.zeromq.ZMQ$Context :ctx context)
           sockets (wall.hack/field zmq.Ctx :sockets ctx)]
       (doseq [socket sockets]
-        (.close socket)))
+        (doto socket
+          (.setSocketOpt zmq.ZMQ/ZMQ_LINGER (int 0))
+          (.close))))
     (.term context)))
 
 (defmacro with-context
