@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.1.3"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.2.0"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -10,32 +10,19 @@
   []
   (binding [zmq/*context-type* :zmq-context]
     (zmq/with-new-context
-      (future
+      (zmq/before-shutdown
+        (println "Interrupt received. Shutting down..."))
+
+      (zmq/after-shutdown
+        (println "Done."))
+
+      (zmq/worker-thread {:on-interrupt #(println "SERVER: ETERM caught!")}
         (println "SERVER: Starting server...")
         (let [server (zmq/socket :rep {:bind SOCKET-ADDRESS})]
           (println "SERVER: Blocking as I wait for a message...")
           (while true
-            (try
-              (zmq/receive-msg server)
-              (catch org.zeromq.ZMQException e
-                (let [ETERM (.getCode org.zeromq.ZMQ$Error/ETERM)]
-                  (if (= ETERM (.getErrorCode e))
-                    (println "SERVER: ETERM caught!")
-                    (throw e)))))
+            (zmq/receive-msg server)
             (Thread/sleep 1000))))
-
-      (.addShutdownHook (Runtime/getRuntime)
-        (let [ctx zmq/*context*] ; pass in the value bound by with-new-context
-          (Thread.
-            (fn []
-              (println "Interrupt received. Shutting down...")
-              (zmq/destroy-context! ctx) ; this interrupts the worker thread
-
-              (println)
-              (println "Calling shutdown-agents...")
-              (shutdown-agents)
-
-              (println "Done.")))))
 
       (Thread/sleep 100)
       (println \newline "Waiting for Ctrl-C..." \newline)

@@ -1,11 +1,25 @@
 (ns ezzmq.core
-  (:require [wall.hack])
+  (:require [clojure.set :as set]
+            [wall.hack])
   (:import  [org.zeromq ZMQ ZContext ZMsg]))
 
 ;;; CONTEXT ;;;
 
 (def ^:dynamic *context* nil)
 (def ^:dynamic *context-type* :zcontext)
+
+(def ^:dynamic *before-shutdown-fns* {})
+(def ^:dynamic *after-shutdown-fns* {})
+
+(defmacro before-shutdown
+  [& body]
+  `(alter-var-root #'*before-shutdown-fns*
+                   update *context* conj (fn [] ~@body)))
+
+(defmacro after-shutdown
+  [& body]
+  `(alter-var-root #'*after-shutdown-fns*
+                   update *context* conj (fn [] ~@body)))
 
 (defn context
   "Returns a new ZMQ context."
@@ -14,12 +28,6 @@
     :zcontext    (ZContext. 1)
     :zmq-context (ZMQ/context 1)
     (throw (Exception. (format "Invalid context type: %s" *context-type*)))))
-
-(require '[clojure.test :refer :all])
-
-(deftest random-test
-  (testing "math"
-    (is (= 2 (+ 1 1)))))
 
 (defprotocol SocketMaker
   (create-socket [ctx socket-type]))
@@ -53,14 +61,38 @@
           (.close))))
     (.term context)))
 
+(defn shut-down-context!
+  [ctx]
+  (let [before-fns (get *before-shutdown-fns* ctx [])
+        after-fns  (get *after-shutdown-fns* ctx [])]
+    (doseq [f before-fns] (f))
+    (destroy-context! ctx)
+    (doseq [f after-fns] (f))
+    (alter-var-root #'*before-shutdown-fns* dissoc ctx)
+    (alter-var-root #'*after-shutdown-fns* dissoc ctx)))
+
+; Ensures that on shutdown, any "active" contexts are shut down, and their
+; before- and after-shutdown hooks are called.
+(.addShutdownHook (Runtime/getRuntime)
+  (let [ctx        *context*
+        before-fns (get *before-shutdown-fns* ctx [])
+        after-fns  (get *after-shutdown-fns* ctx [])]
+    (Thread.
+      (fn []
+        (doseq [ctx (set/union (set (keys *before-shutdown-fns*))
+                               (set (keys *after-shutdown-fns*)))]
+          (shut-down-context! ctx))))))
+
 (defmacro with-context
   "Executes `body` given an existing ZMQ context `ctx`.
 
    When done, closes all sockets and destroys the context."
   [ctx & body]
   `(binding [*context* ~ctx]
+     (alter-var-root #'*before-shutdown-fns* assoc *context* [])
+     (alter-var-root #'*after-shutdown-fns* assoc *context* [])
      ~@body
-     (destroy-context! *context*)))
+     (shut-down-context! *context*)))
 
 (defmacro with-new-context
   "Executes `body` using a one-off ZMQ context.
@@ -68,8 +100,10 @@
    When done, closes all sockets and destroys the context."
   [& body]
   `(binding [*context* (context)]
+     (alter-var-root #'*before-shutdown-fns* assoc *context* [])
+     (alter-var-root #'*after-shutdown-fns* assoc *context* [])
      ~@body
-     (destroy-context! *context*)))
+     (shut-down-context! *context*)))
 
 ;;; SOCKETS ;;;
 
@@ -153,3 +187,17 @@
   ([socket msg zmsg]
    (add-to-zmsg msg zmsg)
    (.send zmsg socket)))
+
+;;; WORKER THREADS ;;;
+
+(defmacro worker-thread
+  [{:keys [on-interrupt] :as opts} & body]
+  `(future
+     (try
+       ~@body
+       (catch org.zeromq.ZMQException e#
+         (let [ETERM# (.getCode org.zeromq.ZMQ$Error/ETERM)]
+           (if (= ETERM# (.getErrorCode e#))
+             ((or ~on-interrupt #()))
+             (throw e#)))))))
+
