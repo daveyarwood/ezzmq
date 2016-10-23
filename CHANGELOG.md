@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.2.0 (10/23/16)
+
+* Ensures that `setLinger(0)` is called when a ZMQ.Context is terminated.
+
+* `worker-thread` macro abstracts away the boilerplate of catching `ETERM` and exiting cleanly in a worker thread. See README for more info.
+
+* Ensures that any "active" contexts are terminated if the process is interrupted.
+
+* `before-shutdown` and `after-shutdown` functions for adding custom before/after shutdown hooks for the current context. See README for more info.
+
 ## 0.1.2 (10/16/16)
 
 * `ezzmq.core/socket` will now accept a collection of strings instead of a single string as the value of the `:bind` and `:connect` options. This can be used to bind/connect a socket to multiple addresses.

@@ -76,6 +76,35 @@ ezzmq handles creating a context and eventually shutting down the context, inclu
 
 Once all the work is done, any sockets created will be closed and the context will be destroyed.
 
+#### Before/after shutdown actions
+
+ezzmq adds a shutdown hook to ensure that the context is shut down cleanly even if the process is interrupted, e.g. if you press Ctrl-C while it's still running. This means you don't have to worry about adding a shutdown hook yourself.
+
+If there are special actions you would like to happen before or after the context is terminated, you can use `ezzmq.core/before-shutdown` and `ezzmq.core/after-shutdown`:
+
+```clojure
+(zmq/with-new-context
+  (zmq/before-shutdown
+    (println "Shutting down context..."))
+
+  (zmq/after-shutdown
+    (println "Done."))
+
+  (comment "do work here"))
+```
+
+#### Worker threads
+
+Shutting down a context with JeroMQ can be a little tricky when you are sharing a single process's context across multiple threads. This is a common pattern when you have a main thread and an asynchronous "worker thread" and they communicate with each other via an inproc socket.
+
+In cases like this, when you terminate the context, the worker thread is interrupted; this is accomplished by throwing an `ETERM` ZMQException on the worker thread if the worker thread is doing some ZMQ-related blocking action, like waiting to receive a message.
+
+The ["recommended" way of handling this](https://github.com/zeromq/jeromq/blob/master/src/test/java/guide/interrupt.java) is for the worker thread to wrap any ZMQ-related blocking actions in a try/catch and handle ZMQExceptions when the error code is `ETERM`.
+
+ezzmq abstracts away this boilerplate code for you. To take advantage of this abstraction, use the `ezzmq.core/worker-thread` macro instead of a `future`. (Under the hood, `worker-thread` creates a future and wraps its execution in a try/catch that handles the `ETERM` exception.)
+
+For an example usage of the `worker-thread` macro, see [the ezzmq translation of the zguide interrupt example](https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/interrupt.boot).
+
 ### Sockets
 
 Use the `ezzmq.core/socket` function to create and bind/connect sockets in a single function call. You should use a `let` binding so you have a reference to the sockets and can interact with them later:
