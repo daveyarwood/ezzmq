@@ -103,10 +103,7 @@
 
    When done, closes all sockets and destroys the context."
   [& body]
-  `(binding [*context* (context)]
-     (init-context! *context*)
-     ~@body
-     (shut-down-context! *context*)))
+  `(with-context (context) ~@body))
 
 ;;; SOCKETS ;;;
 
