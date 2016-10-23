@@ -8,22 +8,21 @@
 
 (defn -main
   []
-  (binding [zmq/*context-type* :zmq-context]
-    (zmq/with-new-context
-      (zmq/before-shutdown
-        (println "Interrupt received. Shutting down..."))
+  (zmq/with-new-context
+    (zmq/before-shutdown
+      (println "Interrupt received. Shutting down..."))
 
-      (zmq/after-shutdown
-        (println "Done."))
+    (zmq/after-shutdown
+      (println "Done."))
 
-      (zmq/worker-thread {:on-interrupt #(println "SERVER: ETERM caught!")}
-        (println "SERVER: Starting server...")
-        (let [server (zmq/socket :rep {:bind SOCKET-ADDRESS})]
-          (println "SERVER: Blocking as I wait for a message...")
-          (while true
-            (zmq/receive-msg server)
-            (Thread/sleep 1000))))
+    (zmq/worker-thread {:on-interrupt #(println "SERVER: ETERM caught!")}
+                       (println "SERVER: Starting server...")
+                       (let [server (zmq/socket :rep {:bind SOCKET-ADDRESS})]
+                         (println "SERVER: Blocking as I wait for a message...")
+                         (while true
+                           (zmq/receive-msg server)
+                           (Thread/sleep 1000))))
 
-      (Thread/sleep 100)
-      (println \newline "Waiting for Ctrl-C..." \newline)
-      (while true (Thread/sleep 100)))))
+    (Thread/sleep 100)
+    (println \newline "Waiting for Ctrl-C..." \newline)
+    (while true (Thread/sleep 100))))
