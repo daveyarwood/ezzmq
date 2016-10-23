@@ -8,19 +8,6 @@
 (def ^:dynamic *context* nil)
 (def ^:dynamic *context-type* :zcontext)
 
-(def ^:dynamic *before-shutdown-fns* {})
-(def ^:dynamic *after-shutdown-fns* {})
-
-(defmacro before-shutdown
-  [& body]
-  `(alter-var-root #'*before-shutdown-fns*
-                   update *context* conj (fn [] ~@body)))
-
-(defmacro after-shutdown
-  [& body]
-  `(alter-var-root #'*after-shutdown-fns*
-                   update *context* conj (fn [] ~@body)))
-
 (defn context
   "Returns a new ZMQ context."
   []
@@ -61,6 +48,24 @@
           (.close))))
     (.term context)))
 
+(def ^:dynamic *before-shutdown-fns* {})
+(def ^:dynamic *after-shutdown-fns* {})
+
+(defmacro before-shutdown
+  [& body]
+  `(alter-var-root #'*before-shutdown-fns*
+                   update *context* conj (fn [] ~@body)))
+
+(defmacro after-shutdown
+  [& body]
+  `(alter-var-root #'*after-shutdown-fns*
+                   update *context* conj (fn [] ~@body)))
+
+(defn init-context!
+  [ctx]
+  (alter-var-root #'*before-shutdown-fns* assoc ctx [])
+  (alter-var-root #'*after-shutdown-fns* assoc ctx []))
+
 (defn shut-down-context!
   [ctx]
   (let [before-fns (get *before-shutdown-fns* ctx [])
@@ -89,8 +94,7 @@
    When done, closes all sockets and destroys the context."
   [ctx & body]
   `(binding [*context* ~ctx]
-     (alter-var-root #'*before-shutdown-fns* assoc *context* [])
-     (alter-var-root #'*after-shutdown-fns* assoc *context* [])
+     (init-context! *context*)
      ~@body
      (shut-down-context! *context*)))
 
@@ -100,8 +104,7 @@
    When done, closes all sockets and destroys the context."
   [& body]
   `(binding [*context* (context)]
-     (alter-var-root #'*before-shutdown-fns* assoc *context* [])
-     (alter-var-root #'*after-shutdown-fns* assoc *context* [])
+     (init-context! *context*)
      ~@body
      (shut-down-context! *context*)))
 
