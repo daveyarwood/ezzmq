@@ -13,7 +13,7 @@
   []
   (case *context-type*
     :zcontext    (ZContext. 1)
-    :zmq-context (ZMQ/context 1)
+    :zmq.context (ZMQ/context 1)
     (throw (Exception. (format "Invalid context type: %s" *context-type*)))))
 
 (defprotocol SocketMaker

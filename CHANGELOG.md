@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.3.0 (10/28/16)
+
+* Breaking change: the `:zmq-context` (`ZMQ.Context`) context type has been renamed to `:zmq.context`. This more clearly conveys that it uses a `ZMQ.Context`, not just that it is a ZMQ context in general.
+
 ## 0.2.0 (10/23/16)
 
 * Ensures that `setLinger(0)` is called when a ZMQ.Context is terminated.

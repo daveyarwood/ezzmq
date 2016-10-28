@@ -54,7 +54,7 @@ Any program you write that uses ZMQ will involve working with sockets. To create
 
 In JeroMQ (the pure-Java ZMQ library on which ezzmq is based), there are at least two different types of contexts you can use. ZContext is the newest and recommended way to create a context, whereas ZMQ.Context is legacy and will probably be deprecated in the near future.
 
-ezzmq uses ZContext by default, but you can bind `ezzmq.core/*context-type*` to `:zmq-context` to use a ZMQ.Context instead if you want.
+ezzmq uses ZContext by default, but you can bind `ezzmq.core/*context-type*` to `:zmq.context` to use a ZMQ.Context instead if you want.
 
 The typical workflow of a single ZMQ thread or process is this:
 

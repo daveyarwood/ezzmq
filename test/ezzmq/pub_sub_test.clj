@@ -29,7 +29,7 @@
         (println)
         (println "Running tests using ZContext...")
         (test-run))
-      (binding [zmq/*context-type* :zmq-context]
+      (binding [zmq/*context-type* :zmq.context]
         (println)
         (println "Running tests using ZMQ.Context...")
         (test-run)))))
