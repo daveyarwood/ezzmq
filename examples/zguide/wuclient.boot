@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.1.1"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.4.0"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -15,7 +15,7 @@
                                     :subscribe zip-code})]
        (println (format "Receiving updates for zip code %s..." zip-code))
        (loop [n 0 temperature-sum 0]
-         (if (< n 50)
+         (if (< n 25)
            (let [msg (zmq/receive-msg socket :stringify true)]
              (println "Received weather update:" msg)
              (let [temp (->> msg
@@ -26,4 +26,4 @@
                (recur (inc n) (+ temperature-sum temp))))
            (println (format "The average temperature for zip code %s is %s"
                             zip-code
-                            (/ temperature-sum 50.0)))))))))
+                            (/ temperature-sum 25.0)))))))))
