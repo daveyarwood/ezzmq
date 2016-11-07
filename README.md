@@ -135,6 +135,8 @@ The value for `:subscribe` can be either a string, a byte array, or a collection
     (comment "do stuff with socket here")))
 ```
 
+If you leave out the `:subscribe` key, ezzmq will set a default topic of `""` for you and you will receive all published messages.
+
 ### Messages
 
 ZeroMQ messages can be single- or multipart. In low-level usage of ZeroMQ, if a message is multipart you have to keep receiving message frames manually until there are no more parts to receive.
