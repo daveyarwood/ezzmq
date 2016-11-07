@@ -23,6 +23,7 @@
        :license {"name" "Eclipse Public License"
                  "url"  "http://www.eclipse.org/legal/epl-v10.html"}}
   test {:namespaces '#{ezzmq.pub-sub-test
+                       ezzmq.push-pull-test
                        ezzmq.req-rep-test}})
 
 (deftask deploy
