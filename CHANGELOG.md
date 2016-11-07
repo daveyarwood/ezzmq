@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.4.0 (11/7/16)
+
+* When you want to create a SUB socket and you want to receive _all_ messages (not just particular topic(s)), you can now leave out the `:subscribe` option and ezzmq will use a default topic of `""` (all messages).
+
+* Added a `polling` convenience macro and a `poll` function, to be used together. See the README for more info about polling with ezzmq.
+
 ## 0.3.0 (10/28/16)
 
 * Breaking change: the `:zmq-context` (`ZMQ.Context`) context type has been renamed to `:zmq.context`. This more clearly conveys that it uses a `ZMQ.Context`, not just that it is a ZMQ context in general.

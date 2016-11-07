@@ -175,6 +175,47 @@ The message you send can either be a single string, a single byte array, or a se
 
 To see some practical examples of how to use ezzmq, you may be interested in checking out [these implementations](https://github.com/daveyarwood/ezzmq/tree/master/examples/zguide) of the official ZeroMQ [ZGuide](http://zguide.zeromq.org/) examples.
 
+### Polling
+
+Sometimes you want to handle messages coming from multiple sockets at once. The ZeroMQ way to do this is by **polling**. The typical boilerplate code you would write for this would do the following:
+
+- Create a Poller instance. When you do this, you have to specify how many sockets you'll be polling for some stupid reason. (Can't it just keep count as you register them?)
+- Register the sockets you want to poll with the poller. This includes specifying which types of events you want to poll for: `POLLIN` (is there a message to receive?), `POLLOUT` (can I send a message?) and/or `POLLERR` (is the socket in an error state?).
+- Poll! (This updates the state of the poller.)
+- Iterate through each socket you want to check. For each socket:
+  - Check for `POLLIN`, `POLLOUT` and/or `POLLERR`, depending on what you want to do. You have to supply the index of the socket you want to check when you do this, because that's _totally_ something we want to worry about keeping track of.
+  - If the socket is in that state, then do some handling action. For example, if you're checking `POLLIN` and there is in fact a message to receive, then the handling action would be receiving a message from the socket and doing something with it.
+
+This is pretty ugly, but nothing we can't abstract away. In ezzmq it works like this:
+
+```clojure
+(zmq/polling {:stringify true}
+  [socket-a :pollin [msg]
+   (println "Received msg:" msg)
+
+   socket-b :pollin [msg]
+   (println "Received msg:" msg)
+
+   socket-c :pollout []
+   (zmq/send-msg socket-c "hey here is a msg")
+
+   socket-d :pollerr []
+   (throw (Exception. "SOCKET D HAS GONE ROGUE"))]
+
+   (while true
+     (zmq/poll 1000)))
+```
+
+In the code above, the `polling` macro sets up a poller for you to check 4 previously defined sockets, in the order listed.
+
+Whenever `socket-a` or `socket-b` have messages to receive, we go ahead and receive them and execute your handling code, which in the above example is just printing the message we received.
+
+Whenever `socket-c` is in a state where we can send a message, we send a message.
+
+Whenever `socket-d` is in an error state, we flip out and throw an exception. (Don't do this in practice.)
+
+See [mspoller.boot](https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/mspoller.boot) for a working example of a situation where we poll two sockets (a SUB socket and a PULL socket) and print all the messages we receive from either socket.
+
 ## Contributing
 
 If you like the direction I'm going with this library and you have things you'd like to do with it that it currently can't do, please [file an issue](https://github.com/daveyarwood/ezzmq/issues) and we'll figure it out together. I want ezzmq to be an awesome and sensible way to build ZeroMQ apps in Clojure.
