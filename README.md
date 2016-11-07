@@ -208,7 +208,7 @@ This is pretty ugly, but nothing we can't abstract away. In ezzmq it works like 
 
 In the code above, the `polling` macro sets up a poller for you to check 4 previously defined sockets, in the order listed.
 
-Whenever `socket-a` or `socket-b` have messages to receive, we go ahead and receive them and execute your handling code, which in the above example is just printing the message we received.
+Whenever `socket-a` or `socket-b` have messages to receive, we go ahead and receive them and execute some handling code, which in the above example is just printing the message we received.
 
 Whenever `socket-c` is in a state where we can send a message, we send a message.
 
