@@ -204,8 +204,8 @@ This is pretty ugly, but nothing we can't abstract away. In ezzmq it works like 
    socket-d :pollerr []
    (throw (Exception. "SOCKET D HAS GONE ROGUE"))]
 
-   (while true
-     (zmq/poll 1000)))
+  (while true
+    (zmq/poll 1000)))
 ```
 
 In the code above, the `polling` macro sets up a poller for you to check 4 previously defined sockets, in the order listed.
