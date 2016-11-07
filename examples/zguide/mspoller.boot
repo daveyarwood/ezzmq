@@ -19,13 +19,13 @@
            polling? (atom true)]
        ; necessary because of JeroMQ issue #380
        (zmq/before-shutdown (reset! polling? false))
+
        (zmq/polling {:stringify true}
-         [; connect to task ventilator
-          pull :pollin [msg]
+         [pull :pollin [msg] ; connect to task ventilator
           (println (format "PULL: got msg: %s" msg))
 
-          ; connect to weather server
-          sub :pollin [msg]
+          sub :pollin [msg]  ; connect to weather server
           (println (format "SUB: got msg: %s" msg))]
+
          (while @polling?
            (zmq/poll)))))))
