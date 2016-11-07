@@ -8,8 +8,9 @@
 
 (def ^:private namespaces
   '[ezzmq.context
-    ezzmq.socket
     ezzmq.message
+    ezzmq.poll
+    ezzmq.socket
     ezzmq.thread])
 
 (doseq [ns namespaces]

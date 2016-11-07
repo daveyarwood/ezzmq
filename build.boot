@@ -22,7 +22,8 @@
        :scm {:url "https://github.com/daveyarwood/ezzmq"}
        :license {"name" "Eclipse Public License"
                  "url"  "http://www.eclipse.org/legal/epl-v10.html"}}
-  test {:namespaces '#{ezzmq.pub-sub-test
+  test {:namespaces '#{ezzmq.poll-test
+                       ezzmq.pub-sub-test
                        ezzmq.push-pull-test
                        ezzmq.req-rep-test}})
 
