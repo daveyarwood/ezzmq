@@ -12,10 +12,8 @@
   [& body]
   `(do
      (binding [zmq/*context-type* :zcontext]
-       (println)
-       (println "Running tests using ZContext...")
+       (println "• Running tests using ZContext...")
        ~@body)
      (binding [zmq/*context-type* :zmq.context]
-       (println)
-       (println "Running tests using ZMQ.Context...")
+       (println "• Running tests using ZMQ.Context...")
        ~@body)))

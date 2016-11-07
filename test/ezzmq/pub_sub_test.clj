@@ -14,7 +14,7 @@
     ; give client time to connect so it gets all the test messages
     (Thread/sleep 1000)
     (doseq [msg msgs]
-      (println (format "SERVER: Sending msg: %s" msg))
+      ; (println (format "SERVER: Sending msg: %s" msg))
       (zmq/send-msg socket msg))))
 
 (use-fixtures :once
@@ -34,5 +34,5 @@
       (testing "can receive relevant messages from a PUB server"
         (doseq [expected ["C one" "C two" "C three" "C four"]]
           (let [msg (zmq/receive-msg socket :stringify true)]
-            (println (format "CLIENT: Received msg: %s" msg))
+            ; (println (format "CLIENT: Received msg: %s" msg))
             (is (= expected (first msg)))))))))
