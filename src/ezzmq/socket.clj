@@ -41,8 +41,8 @@
         (let [connections (if (coll? connect) connect [connect])]
           (doseq [c connections]
             (.connect socket c))))
-      (when subscribe
-        (let [topics (if (coll? subscribe) subscribe [subscribe])]
+      (when (= (get socket-types :sub) socket-type)
+        (let [topics (if (coll? subscribe) subscribe [(or subscribe "")])]
           (doseq [t topics]
             (let [topic (if (string? t) (.getBytes t) t)]
               (.subscribe socket topic)))))
