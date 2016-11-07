@@ -20,19 +20,10 @@
 (use-fixtures :once
   (fn [run-tests]
     (alter-var-root #'*port* (constantly (util/find-open-port)))
-    (letfn [(test-run []
-              (zmq/with-new-context
-                (future (run-server))
-                (zmq/with-new-context
-                  (run-tests))))]
-      (binding [zmq/*context-type* :zcontext]
-        (println)
-        (println "Running tests using ZContext...")
-        (test-run))
-      (binding [zmq/*context-type* :zmq.context]
-        (println)
-        (println "Running tests using ZMQ.Context...")
-        (test-run)))))
+    (util/for-each-context-type
+      (zmq/with-new-context
+        (future (run-server))
+        (run-tests)))))
 
 (deftest req-rep-tests
   (testing "a REQ client"
