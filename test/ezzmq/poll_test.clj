@@ -41,8 +41,9 @@
       (testing "can connect to two sockets"
         (is (= org.zeromq.ZMQ$Socket (type sub)))
         (is (= org.zeromq.ZMQ$Socket (type pull))))
-      (testing "can poll two sockets and receive all the messages"
-        (let [msgs (atom #{})]
+      (testing "can poll two sockets"
+        (let [msgs  (atom #{})
+              tally (atom {0 0, 1 0})]
           (zmq/polling {:stringify true}
             [sub :pollin [msg]
              (do
@@ -54,5 +55,13 @@
                ; (println "CLIENT: Received msg:" msg)
                (swap! msgs conj (Integer/parseInt (first msg))))]
             (while (< (count @msgs) 100)
-              (zmq/poll)))
-          (is (= (set (range 100)) @msgs)))))))
+              (let [got-msgs (zmq/poll)]
+                (swap! tally #(reduce (fn [tally socket-index]
+                                        (update tally socket-index inc))
+                                      %
+                                      got-msgs)))))
+          (testing "and receive all the messages"
+            (is (= (set (range 100)) @msgs)))
+          (testing "and on each poll, the `poll` call returns a set of indexes
+                    representing sockets on which messages were received"
+            (is (= {0 50, 1 50} @tally))))))))

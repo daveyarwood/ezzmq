@@ -61,11 +61,19 @@
    how to do this.")
 
 (defn poll
+  "Poll for messages on each sockets in *poll-items*.
+
+   Returns a set of indexes representing the sockets on which messages were
+   received."
   [& [timeout]]
   (if timeout (.poll *poller* timeout) (.poll *poller*))
-  (doseq [{:keys [type index handler]} *poll-items*]
-    (when (case type
-            :pollin  (.pollin  *poller* index)
-            :pollout (.pollout *poller* index)
-            :pollerr (.pollerr *poller* index))
-      (handler))))
+  (let [got-msgs (atom #{})]
+    (doseq [{:keys [type index handler]} *poll-items*]
+      (when (case type
+              :pollin  (.pollin  *poller* index)
+              :pollout (.pollout *poller* index)
+              :pollerr (.pollerr *poller* index))
+        (do
+          (swap! got-msgs conj index)
+          (handler))))
+    @got-msgs))

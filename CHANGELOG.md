@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.4.1 (11/24/16)
+
+* The `poll` function now returns a set of indexes representing sockets on which messages were received. See the Polling section of the README for an example.
+
 ## 0.4.0 (11/7/16)
 
 * When you want to create a SUB socket and you want to receive _all_ messages (not just particular topic(s)), you can now leave out the `:subscribe` option and ezzmq will use a default topic of `""` (all messages).

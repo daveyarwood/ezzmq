@@ -218,6 +218,30 @@ Whenever `socket-d` is in an error state, we flip out and throw an exception. (D
 
 See [mspoller.boot](https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/mspoller.boot) for a working example of a situation where we poll two sockets (a SUB socket and a PULL socket) and print all the messages we receive from either socket.
 
+For cases where you need to take certain actions based on which sockets had messages each time you poll, you can use the return value of `ezzmq.core/poll`. The return value is a set of indexes representing which sockets had messages.
+
+For example:
+
+```clojure
+(zmq/polling {:stringify true}
+  [socket-a :pollin [msg]
+   (println "Received msg:" msg)
+
+   socket-b :pollin [msg]
+   (println "Received msg:" msg)
+
+   socket-c :pollout []
+   (zmq/send-msg socket-c "hey here is a msg")
+
+   socket-d :pollerr []
+   (throw (Exception. "SOCKET D HAS GONE ROGUE"))]
+
+  (while true
+    (let [got-msgs (zmq/poll 1000)]
+      (when-not (contains? got-msgs 0)
+        (println "no msg received on socket-a")))))
+```
+
 ## Contributing
 
 If you like the direction I'm going with this library and you have things you'd like to do with it that it currently can't do, please [file an issue](https://github.com/daveyarwood/ezzmq/issues) and we'll figure it out together. I want ezzmq to be an awesome and sensible way to build ZeroMQ apps in Clojure.
