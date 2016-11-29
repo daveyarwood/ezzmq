@@ -1,5 +1,5 @@
 (ns ezzmq.message
-  (:import [org.zeromq ZMQ$Socket ZMsg]))
+  (:import [org.zeromq ZMQ$Socket ZFrame]))
 
 (defn receive-msg
   "Receives an entire message. This means receiving one frame, then checking to
@@ -17,29 +17,28 @@
         frames))))
 
 (defprotocol Sendable
-  (add-to-zmsg [x zmsg]))
+  (zframes [x]))
 
 (extend-protocol Sendable
   (Class/forName "[B") ; byte array
-  (add-to-zmsg [ba zmsg] (.add zmsg ba))
+  (zframes [ba] [(ZFrame. ba)])
 
   String
-  (add-to-zmsg [s zmsg] (.addString zmsg s))
+  (zframes [s] [(ZFrame. s)])
 
   clojure.lang.Sequential
-  (add-to-zmsg [coll zmsg] (doseq [x coll] (add-to-zmsg x zmsg))))
+  (zframes [coll] (mapv #(ZFrame. %) coll)))
 
 (defn send-msg
-  "Sends a ZMsg. The input to this function can be:
+  "Sends a message. The input to this function can be:
 
    - a string
    - a byte array
    - a sequence of any number of strings and byte arrays
 
-   Each string/byte array becomes a frame in the ZMsg."
+   Each string/byte array becomes a ZFrame in the message."
   ([socket msg]
-   (send-msg socket msg (ZMsg.)))
-  ([socket msg zmsg]
-   (add-to-zmsg msg ^ZMsg zmsg)
-   (.send zmsg socket)))
-
+   (let [frames (zframes msg)]
+     (doseq [frame (butlast frames)]
+       (.send frame socket ZFrame/MORE))
+     (.send (last frames) socket 0))))
