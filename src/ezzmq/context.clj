@@ -39,6 +39,8 @@
 (def ^:dynamic *before-shutdown-fns* {})
 (def ^:dynamic *after-shutdown-fns* {})
 
+(def ^:dynamic *shutting-down* #{})
+
 (defmacro before-shutdown
   [& body]
   `(alter-var-root #'*before-shutdown-fns*
@@ -56,13 +58,17 @@
 
 (defn shut-down-context!
   [ctx]
-  (let [before-fns (get *before-shutdown-fns* ctx [])
-        after-fns  (get *after-shutdown-fns* ctx [])]
-    (doseq [f before-fns] (f))
-    (destroy-context! ctx)
-    (doseq [f after-fns] (f))
-    (alter-var-root #'*before-shutdown-fns* dissoc ctx)
-    (alter-var-root #'*after-shutdown-fns* dissoc ctx)))
+  (when-not (*shutting-down* ctx)
+    (do
+      (alter-var-root #'*shutting-down* conj ctx)
+      (let [before-fns (get *before-shutdown-fns* ctx [])
+            after-fns  (get *after-shutdown-fns* ctx [])]
+        (doseq [f before-fns] (f))
+        (destroy-context! ctx)
+        (doseq [f after-fns] (f)))
+      (alter-var-root #'*before-shutdown-fns* dissoc ctx)
+      (alter-var-root #'*after-shutdown-fns* dissoc ctx)
+      (alter-var-root #'*shutting-down* disj ctx))))
 
 ; Ensures that on shutdown, any "active" contexts are shut down, and their
 ; before- and after-shutdown hooks are called.
