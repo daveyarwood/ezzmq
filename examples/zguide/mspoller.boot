@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.4.0"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.4.2"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -15,11 +15,7 @@
    (zmq/with-new-context
      (let [pull     (zmq/socket :pull {:connect (format "tcp://*:%s" port1)})
            sub      (zmq/socket :sub  {:connect (format "tcp://*:%s" port2)
-                                       :subscribe "10001"})
-           polling? (atom true)]
-       ; necessary because of JeroMQ issue #380
-       (zmq/before-shutdown (reset! polling? false))
-
+                                       :subscribe "10001"})]
        (zmq/polling {:stringify true}
          [pull :pollin [msg] ; connect to task ventilator
           (println (format "PULL: got msg: %s" msg))
@@ -27,5 +23,5 @@
           sub :pollin [msg]  ; connect to weather server
           (println (format "SUB: got msg: %s" msg))]
 
-         (while @polling?
+         (zmq/while-polling
            (zmq/poll)))))))
