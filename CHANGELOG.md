@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.5.0 (11/30/16)
+
+This release is the same as 0.4.2. I meant to do a new minor version instead of a new patch version.
+
+My bad.
+
 ## 0.4.2 (11/30/16)
 
 * Updated JeroMQ dependency to 0.3.6.
