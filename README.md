@@ -248,7 +248,7 @@ Here is an example of how to use `polling?` along with additional conditions to 
      (if (= ["STOP"] msg)
        (reset! running? false))]
 
-    (while (and (polling?) @running?)
+    (while (and (zmq/polling?) @running?)
       (zmq/poll 1000))))
 ```
 
