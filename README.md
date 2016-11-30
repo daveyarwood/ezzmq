@@ -204,11 +204,13 @@ This is pretty ugly, but nothing we can't abstract away. In ezzmq it works like 
    socket-d :pollerr []
    (throw (Exception. "SOCKET D HAS GONE ROGUE"))]
 
-  (while true
+  (zmq/while-polling
     (zmq/poll 1000)))
 ```
 
 In the code above, the `polling` macro sets up a poller for you to check 4 previously defined sockets, in the order listed.
+
+The body of the `while-polling` macro is executed in a loop until it is no longer possible to poll. This can happen due to a handful of problems that can crop up, all of which `while-polling` handles for you behind the scenes, e.g. the context being shut down or the process being interrupted by a Ctrl-C.
 
 Whenever `socket-a` or `socket-b` have messages to receive, we go ahead and receive them and execute some handling code, which in the above example is just printing the message we received.
 
@@ -236,7 +238,7 @@ For example:
    socket-d :pollerr []
    (throw (Exception. "SOCKET D HAS GONE ROGUE"))]
 
-  (while true
+  (zmq/while-polling
     (let [got-msgs (zmq/poll 1000)]
       (when-not (contains? got-msgs 0)
         (println "no msg received on socket-a")))))

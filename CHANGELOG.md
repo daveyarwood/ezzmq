@@ -1,5 +1,37 @@
 # CHANGELOG
 
+## 0.4.2 (11/30/16)
+
+* Updated JeroMQ dependency to 0.3.6.
+
+* Added some code that guards against context before- and after-shutdown hooks running more than once.
+
+* Improvements to polling reliability -- see the bullet points below.
+
+  tl;dr: do this now and you'll run into less weird issues when polling:
+
+  ```clojure
+  (require '[ezzmq.core :as zmq])
+
+  (zmq/with-new-context
+    (let [socket1 ...
+          socket2 ...]
+      (zmq/polling {}
+        [socket1 :pollin [msg] (handle msg)
+         socket2 :pollin [msg] (handle msg)]
+        (zmq/while-polling
+          (zmq/poll 1000)))))
+  ```
+
+  * Added an internal `*channel-open*` flag that keeps track of whether or not the current polling channel is still open. Sometimes the channel can close on you, e.g. if the context is shut down while you're still polling, resulting in an unhandled ClosedChannelException. Hopefully this will be fixed upstream in JeroMQ, but as a work-around, ezzmq will now catch situations where you can't poll and set `*channel-open*` to false.
+
+  * Added a `while-polling` macro that executes its body as long as the current thread is uninterrupted and `*channel-open*` remains true.
+
+  * Adjusted `poll` and `polling` so that `*channel-open*` will be set to false if any of the following happen:
+    * The context is shut down.
+    * A ClosedChannelException is thrown (this error is caught internally; if you use `with-polling`, the only behavior you should notice is that the poller stops polling if the channel closes).
+    * A call to `ZMQ.poll()` returns `-1`.
+
 ## 0.4.1 (11/24/16)
 
 * The `poll` function now returns a set of indexes representing sockets on which messages were received. See the Polling section of the README for an example.
