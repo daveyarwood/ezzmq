@@ -64,12 +64,18 @@
    that to the calling code, it looks like we polled and no messages were
    received on any of the sockets.")
 
+(defn polling?
+  "Returns true if the current thread is not interrupted and the channel to be
+   polled is still open for polling."
+  []
+  (and (not (.. Thread currentThread isInterrupted))
+       @*channel-open*))
+
 (defmacro while-polling
   "Polls for messages as long as the channel is open and the current thread is
    not interrupted."
   [& body]
-  `(while (and (not (.. Thread currentThread isInterrupted))
-               @*channel-open*)
+  `(while (polling?)
      ~@body))
 
 (defn poll

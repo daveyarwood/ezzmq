@@ -208,9 +208,9 @@ This is pretty ugly, but nothing we can't abstract away. In ezzmq it works like 
     (zmq/poll 1000)))
 ```
 
-In the code above, the `polling` macro sets up a poller for you to check 4 previously defined sockets, in the order listed.
+#### `polling`
 
-The body of the `while-polling` macro is executed in a loop until it is no longer possible to poll. This can happen due to a handful of problems that can crop up, all of which `while-polling` handles for you behind the scenes, e.g. the context being shut down or the process being interrupted by a Ctrl-C.
+In the code above, the `polling` macro sets up a poller for you to check 4 previously defined sockets, in the order listed.
 
 Whenever `socket-a` or `socket-b` have messages to receive, we go ahead and receive them and execute some handling code, which in the above example is just printing the message we received.
 
@@ -219,6 +219,42 @@ Whenever `socket-c` is in a state where we can send a message, we send a message
 Whenever `socket-d` is in an error state, we flip out and throw an exception. (Don't do this in practice.)
 
 See [mspoller.boot](https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/mspoller.boot) for a working example of a situation where we poll two sockets (a SUB socket and a PULL socket) and print all the messages we receive from either socket.
+
+#### `while-polling`
+
+The body of the `while-polling` macro is executed in a loop until it is no longer possible to poll. This can happen due to a handful of problems that can crop up, all of which `while-polling` handles for you behind the scenes, e.g. the context being shut down or the process being interrupted by a Ctrl-C.
+
+#### `polling?`
+
+There will often be situations where you don't just want to poll forever until the process is interrupted. For example, you may want to define a `running?` atom in your program and set its value to `false` when you receive a specific "shutdown" message on a socket.
+
+You can use the `polling?` function in cases like this to give you more control over the conditions that determine whether or not to keep polling.
+
+`polling?` returns true as long as the current thread is not interrupted and the poller you are using can still be polled.
+
+Under the hood, `while-polling` is implemented as:
+
+```clojure
+(while (polling?)
+  ...)
+```
+
+Here is an example of how to use `polling?` along with additional conditions to determine when to stop polling:
+
+```clojure
+(let [running? (atom true)]
+  (zmq/polling {:stringify true}
+    [socket :pollin [msg]
+     (if (= ["STOP"] msg)
+       (reset! running? false))]
+
+    (while (and (polling?) @running?)
+      (zmq/poll 1000))))
+```
+
+#### `poll`
+
+`poll` triggers a chain of events where we go through the sockets in order and check to see if there are messages on each one. If there is a message, then the specified handling code for that socket is run.
 
 For cases where you need to take certain actions based on which sockets had messages each time you poll, you can use the return value of `ezzmq.core/poll`. The return value is a set of indexes representing which sockets had messages.
 
