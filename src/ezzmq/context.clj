@@ -73,14 +73,11 @@
 ; Ensures that on shutdown, any "active" contexts are shut down, and their
 ; before- and after-shutdown hooks are called.
 (.addShutdownHook (Runtime/getRuntime)
-  (let [ctx        *context*
-        before-fns (get *before-shutdown-fns* ctx [])
-        after-fns  (get *after-shutdown-fns* ctx [])]
-    (Thread.
-      (fn []
-        (doseq [ctx (set/union (set (keys *before-shutdown-fns*))
-                               (set (keys *after-shutdown-fns*)))]
-          (shut-down-context! ctx))))))
+  (Thread.
+    (fn []
+      (doseq [ctx (set/union (set (keys *before-shutdown-fns*))
+                             (set (keys *after-shutdown-fns*)))]
+        (shut-down-context! ctx)))))
 
 (defmacro with-context
   "Executes `body` given an existing ZMQ context `ctx`.
