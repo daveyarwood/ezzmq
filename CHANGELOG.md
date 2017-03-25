@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.5.2 (2017-03-25)
+## 0.5.3 (2017-03-25)
 
 * Updated JeroMQ dependency to 0.4.0.
 
