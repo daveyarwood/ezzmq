@@ -91,7 +91,6 @@
                       :pollin  (.pollin  *poller* index)
                       :pollout (.pollout *poller* index)
                       :pollerr (.pollerr *poller* index))
-                (do
-                  (swap! got-msgs conj index)
-                  (handler))))
+                (swap! got-msgs conj index)
+                (handler)))
             @got-msgs))))))
