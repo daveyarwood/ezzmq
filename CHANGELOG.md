@@ -6,7 +6,7 @@
 
 * ezzmq pollers are now initialized via the context, and thanks to upstream
   changes in JeroMQ, the context ensures that poll selector resources are
-  properly released the context is terminated.
+  properly released when the context is terminated.
 
 * Thanks to upstream changes in JeroMQ, we no longer have to catch
   ClosedChannelExceptions in ezzmq, so the try/catch in ezzmq has been removed.
