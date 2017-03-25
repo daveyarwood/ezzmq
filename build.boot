@@ -2,7 +2,7 @@
   :source-paths #{"src"}
   :resource-paths #{"test"}
   :dependencies '[[org.clojure/clojure "1.8.0"]
-                  [org.zeromq/jeromq   "0.3.6"]
+                  [org.zeromq/jeromq   "0.4.0"]
                   [clj-wallhack        "1.0.1"]
                   [potemkin            "0.4.3"]
                   [adzerk/bootlaces    "0.1.13" :scope "test"]
@@ -11,7 +11,7 @@
 (require '[adzerk.boot-test :refer :all]
          '[adzerk.bootlaces :refer :all])
 
-(def +version+ "0.5.1")
+(def +version+ "0.5.2")
 (bootlaces! +version+)
 
 (task-options!

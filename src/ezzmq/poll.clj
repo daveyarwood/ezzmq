@@ -1,9 +1,19 @@
 (ns ezzmq.poll
-  (:require [ezzmq.context :refer (before-shutdown)]
+  (:require [ezzmq.context :refer (*context* before-shutdown)]
             [ezzmq.message :refer (receive-msg)])
   (:import [java.nio.channels ClosedChannelException]
-           [org.zeromq ZMQ$Poller]
+           [org.zeromq ZMQ$Context ZContext ZMQ$Poller]
            [zmq ZError$IOException]))
+
+(defprotocol PollerMaker
+  (create-poller [ctx socket-type]))
+
+(extend-protocol PollerMaker
+  ZContext
+  (create-poller [ctx socket-type] (.createPoller ctx socket-type))
+
+  ZMQ$Context
+  (create-poller [ctx socket-type] (.poller ctx socket-type)))
 
 (def ^:const poll-types
   {:pollin  ZMQ$Poller/POLLIN
@@ -32,7 +42,7 @@
                                      ~item-body)))
                               ~@item-body)}))]
     `(let [poll-items# ~items
-           poller#     (ZMQ$Poller. (count poll-items#))]
+           poller#     (create-poller *context* (count poll-items#))]
        (binding [*poller*       poller#
                  *poll-items*   poll-items#
                  *channel-open* (atom true)]
@@ -43,26 +53,6 @@
                       (:socket poll-item#)
                       (get poll-types (:type poll-item#))))
          ~@body))))
-
-(comment
-  "As of JeroMQ 0.3.6, there are known issues with polling selector resources
-   not being deallocated / perhaps some race condition where the selector still
-   tries to poll even after the channel has been closed.
-
-   There are a number of open JeroMQ issues related to this, and I have filed
-   one in particular re: java.nio.channels.ClosedChannelException:
-
-   https://github.com/zeromq/jeromq/issues/380
-
-   The bug here is that if we happen to be polling at the time that the context
-   is terminated, the poll selector is not closed properly and a
-   ClosedChannelException is thrown.
-
-   Until this bug is fixed in a release of JeroMQ and we update ezzmq to use the
-   new version of JeroMQ, as a workaround, we include a try-catch here so we
-   can catch the ClosedChannelException and abort. We return 0 in this case, so
-   that to the calling code, it looks like we polled and no messages were
-   received on any of the sockets.")
 
 (defn polling?
   "Returns true if the current thread is not interrupted and the channel to be
@@ -90,23 +80,18 @@
             #{})]
     (if-not @*channel-open*
       (abort timeout)
-      (try
-        (let [poll-result (if timeout
-                            (.poll *poller* timeout)
-                            (.poll *poller*))]
-          (if (= -1 poll-result)
-            (abort nil)
-            (let [got-msgs (atom #{})]
-              (doseq [{:keys [type index handler]} *poll-items*]
-                (when (case type
-                        :pollin  (.pollin  *poller* index)
-                        :pollout (.pollout *poller* index)
-                        :pollerr (.pollerr *poller* index))
-                  (do
-                    (swap! got-msgs conj index)
-                    (handler))))
-              @got-msgs)))
-        (catch ZError$IOException e
-          (if (= ClosedChannelException (.. e getCause getClass))
-            (abort timeout)
-            (throw e)))))))
+      (let [poll-result (if timeout
+                          (.poll *poller* timeout)
+                          (.poll *poller*))]
+        (if (= -1 poll-result)
+          (abort nil)
+          (let [got-msgs (atom #{})]
+            (doseq [{:keys [type index handler]} *poll-items*]
+              (when (case type
+                      :pollin  (.pollin  *poller* index)
+                      :pollout (.pollout *poller* index)
+                      :pollerr (.pollerr *poller* index))
+                (do
+                  (swap! got-msgs conj index)
+                  (handler))))
+            @got-msgs))))))

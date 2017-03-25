@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.5.2 (2017-03-25)
+
+* Updated JeroMQ dependency to 0.4.0.
+
+* ezzmq pollers are now initialized via the context, and thanks to upstream
+  changes in JeroMQ, the context ensures that poll selector resources are
+  properly released the context is terminated.
+
+* Thanks to upstream changes in JeroMQ, we no longer have to catch
+  ClosedChannelExceptions in ezzmq, so the try/catch in ezzmq has been removed.
+
 ## 0.5.1 (2016-11-30)
 
 * Exposed a `polling?` function used in the implementation of `while-polling`.
