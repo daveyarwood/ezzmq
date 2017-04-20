@@ -14,10 +14,10 @@
     :zmq.context (ZMQ/context 1)
     (throw (Exception. (format "Invalid context type: %s" *context-type*)))))
 
-(defprotocol Destroyable
+(defprotocol Destructible
   (destroy-context! [ctx]))
 
-(extend-protocol Destroyable
+(extend-protocol Destructible
   ZContext
   (destroy-context! [ctx] (.destroy ctx))
 
