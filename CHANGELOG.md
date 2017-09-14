@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.6.0 (2017-09-14)
+
+* Updated JeroMQ dependency to 0.4.2. I'm bumping the minor version of ezzmq
+  because JeroMQ 0.4.1 brought significant changes, including that JeroMQ is now
+  based on libzmq 4.1.7 (ZMTP/3.0) instead of libzmq 3.2.5 (ZMTP/2.0). In theory
+  this was not a breaking change, but I feel it is significant and worth bumping
+  the minor version of ezzmq.
+
 ## 0.5.3 (2017-03-25)
 
 * Updated JeroMQ dependency to 0.4.0.
