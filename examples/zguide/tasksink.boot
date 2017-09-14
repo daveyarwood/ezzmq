@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.5.3"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.6.0"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -11,8 +11,9 @@
   ([port]
    (zmq/with-new-context
      (let [sink (zmq/socket :pull {:bind (format "tcp://*:%s" port)})]
-       ; wait for start of batch
+       (println "Waiting for a message signaling start of batch...")
        (zmq/receive-msg sink)
+       (println "Signal received. Collecting results...")
 
        (let [start (System/currentTimeMillis)]
          (dotimes [n 100]

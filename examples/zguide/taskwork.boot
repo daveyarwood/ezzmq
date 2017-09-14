@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.5.3"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.6.0"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -15,6 +15,7 @@
    (zmq/with-new-context
      (let [vent (zmq/socket :pull {:connect (format "tcp://*:%s" vent-port)})
            sink (zmq/socket :push {:connect (format "tcp://*:%s" sink-port)})]
+       (println "Ready for work!")
        (while true
          (let [task-ms (-> (zmq/receive-msg vent :stringify true)
                            first
