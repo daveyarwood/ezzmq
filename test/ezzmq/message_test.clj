@@ -45,5 +45,9 @@
                 _     (zmq/receive-msg socket :timeout 1000)
                 end   (System/currentTimeMillis)]
             (is (>= (- end start) 1000)))
+          (let [start (System/currentTimeMillis)
+                _     (zmq/receive-msg socket :timeout 0)
+                end   (System/currentTimeMillis)]
+            (is (< (- end start) 500)))
           (is (= -1 (.getReceiveTimeOut socket)))))))
 
