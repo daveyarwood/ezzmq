@@ -35,4 +35,6 @@
         (doseq [expected ["C one" "C two" "C three" "C four"]]
           (let [msg (zmq/receive-msg socket :stringify true)]
             ; (println (format "CLIENT: Received msg: %s" msg))
-            (is (= expected (first msg)))))))))
+            (is (= expected (first msg))))))
+      ;; Give the server time to finish sending D and E messages.
+      (Thread/sleep 500))))

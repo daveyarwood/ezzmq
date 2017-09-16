@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## Unreleased
+
+* Added a `:timeout` keyword option to both `send-msg` and `receive-msg`. When
+  used, the socket temporarily gets its send/receive timeout set to the provided
+  number of milliseconds. After the send/receive completes or times out, the
+  original timeout value of the socket is restored.
+
+* `with-send-timeout` and `with-receive-timeout` macros provide a scope where
+  the send/receive timeout has a particular value. (These macros are used under
+  the hood in `send-msg` and `receive-msg` to implement the `:timeout` option.)
+
 ## 0.6.0 (2017-09-14)
 
 * Updated JeroMQ dependency to 0.4.2. I'm bumping the minor version of ezzmq
