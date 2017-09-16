@@ -30,8 +30,8 @@
     (alter-var-root #'*push-port* (constantly (util/find-open-port)))
     (util/for-each-context-type
       (zmq/with-new-context
-        (future (run-pub-server))
-        (future (run-push-server))
+        (util/future (run-pub-server))
+        (util/future (run-push-server))
         (run-tests)))))
 
 (deftest poll-tests

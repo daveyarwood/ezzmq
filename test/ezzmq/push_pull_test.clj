@@ -19,7 +19,7 @@
     (alter-var-root #'*port* (constantly (util/find-open-port)))
     (util/for-each-context-type
       (zmq/with-new-context
-        (future (run-server))
+        (util/future (run-server))
         (run-tests)))))
 
 (deftest push-pull-tests
