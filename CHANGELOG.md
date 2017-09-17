@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 0.7.0 (2017-09-16)
 
 * **BREAKING CHANGE**: `send-msg` and `receive-msg` now take an explicit options
   map instead of inline keyword arguments.
