@@ -14,7 +14,7 @@
            res    "Hello from server"]
        (println "Waiting for requests...")
        (while true
-         (let [req (zmq/receive-msg socket :stringify true)]
+         (let [req (zmq/receive-msg socket {:stringify true})]
            (println "Received msg:" req)
            (Thread/sleep 1000)) ; simulate doing some work
 

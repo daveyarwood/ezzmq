@@ -33,7 +33,7 @@
         (is (= org.zeromq.ZMQ$Socket (type socket))))
       (testing "can receive relevant messages from a PUB server"
         (doseq [expected ["C one" "C two" "C three" "C four"]]
-          (let [msg (zmq/receive-msg socket :stringify true)]
+          (let [msg (zmq/receive-msg socket {:stringify true})]
             ; (println (format "CLIENT: Received msg: %s" msg))
             (is (= expected (first msg))))))
       ;; Give the server time to finish sending D and E messages.

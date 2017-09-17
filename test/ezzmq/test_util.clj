@@ -27,6 +27,7 @@
      (try
        ~@body
        (catch Throwable e#
-         (println "Error in future:" (.getMessage e#))
+         (print "Exception in future: ")
+         (flush)
          (.printStackTrace e#)
          (throw e#)))))

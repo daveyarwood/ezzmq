@@ -40,16 +40,42 @@
      A timeout of 0 will return immediately.
 
      A timeout of -1 (default) will block until the message is sent."
-  [^ZMQ$Socket socket & {:keys [stringify timeout]}]
+  [^ZMQ$Socket socket & [{:keys [stringify timeout]}]]
   (with-receive-timeout socket timeout
-    (loop [frames [(.recv socket)]
-           more? (.hasReceiveMore socket)]
-      (if more?
-        (recur (conj frames (.recv socket))
-               (.hasReceiveMore socket))
-        (if stringify
-          (mapv #(String. %) frames)
-          frames)))))
+    (when-let [first-frame (.recv socket)]
+      (loop [frames [first-frame]
+             more?  (.hasReceiveMore socket)]
+        (if more?
+          (recur (conj frames (.recv socket))
+                 (.hasReceiveMore socket))
+          (if stringify
+            (mapv #(String. %) frames)
+            frames))))))
+
+(defmacro if-msg
+  "Does a (by default) non-blocking receive on `socket`.
+
+   If a message is received, runs the `then` branch with the received message
+   bound to `msg-var`.
+
+   If no message is received, runs the `else` branch.
+
+   Options are the same as those for `receive-msg`."
+  [socket opts [msg-var] then else]
+  `(if-let [~msg-var (receive-msg ~socket (merge {:timeout 0} ~opts))]
+     ~then
+     ~else))
+
+(defmacro when-msg
+  "Does a (by default) non-blocking receive on `socket`.
+
+   If a message is received, runs the `body` with the received message bound to
+   `msg-var`.
+
+   Options are the same as those for `receive-msg`."
+  [socket opts [msg-var] & body]
+  `(when-let [~msg-var (receive-msg ~socket (merge {:timeout 0} ~opts))]
+     ~@body))
 
 (defprotocol Sendable
   (zframes [x]))
@@ -80,7 +106,7 @@
      A timeout of 0 will return immediately.
 
      A timeout of -1 (default) will block until the message is sent."
-  [socket msg & {:keys [timeout]}]
+  [socket msg & [{:keys [timeout]}]]
   (let [frames (zframes msg)]
     (with-send-timeout socket timeout
       (doseq [frame (butlast frames)]

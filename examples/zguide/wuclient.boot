@@ -16,7 +16,7 @@
        (println (format "Receiving updates for zip code %s..." zip-code))
        (loop [n 0 temperature-sum 0]
          (if (< n 25)
-           (let [msg (zmq/receive-msg socket :stringify true)]
+           (let [msg (zmq/receive-msg socket {:stringify true})]
              (println "Received weather update:" msg)
              (let [temp (->> msg
                              first

@@ -16,5 +16,5 @@
          (println "Sending msg:" req)
          (zmq/send-msg socket req)
 
-         (let [res (zmq/receive-msg socket :stringify true)]
+         (let [res (zmq/receive-msg socket {:stringify true})]
            (println "Received msg:" res)))))))

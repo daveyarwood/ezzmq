@@ -2,14 +2,33 @@
 
 ## Unreleased
 
-* Added a `:timeout` keyword option to both `send-msg` and `receive-msg`. When
-  used, the socket temporarily gets its send/receive timeout set to the provided
+* **BREAKING CHANGE**: `send-msg` and `receive-msg` now take an explicit options
+  map instead of inline keyword arguments.
+
+* Added a `:timeout` option to both `send-msg` and `receive-msg`. When used,
+  the socket temporarily gets its send/receive timeout set to the provided
   number of milliseconds. After the send/receive completes or times out, the
   original timeout value of the socket is restored.
 
 * `with-send-timeout` and `with-receive-timeout` macros provide a scope where
   the send/receive timeout has a particular value. (These macros are used under
   the hood in `send-msg` and `receive-msg` to implement the `:timeout` option.)
+
+* Added `if-msg` and `when-msg` helper macros for doing things conditionally
+  depending on whether or not a message was received within a timeout.
+
+  For example:
+
+  ```clojure
+  (zmq/if-msg socket {:stringify true} [msg]
+    (println "Got message:" msg)
+    (println "Didn't get a message."))
+
+  (zmq/when-msg socket {:stringify true} [msg]
+    (println "Got a message!")
+    (println "Here it is:")
+    (prn msg))
+  ```
 
 ## 0.6.0 (2017-09-14)
 

@@ -9,11 +9,11 @@
   []
   (let [socket (zmq/socket :rep {:bind (format "tcp://*:%s" *port*)})]
     (dotimes [n 5]
-      (let [msg (zmq/receive-msg socket :stringify true)]
+      (let [msg (zmq/receive-msg socket {:stringify true})]
         ; (println (format "SERVER: Received msg: %s" msg))
         (zmq/send-msg socket (format "Hello #%s from server" (inc n)))))
     (dotimes [n 3]
-      (let [msg (zmq/receive-msg socket :stringify true)]
+      (let [msg (zmq/receive-msg socket {:stringify true})]
         ; (println (format "SERVER: Received msg: %s" msg))
         (zmq/send-msg socket msg)))))
 
@@ -33,7 +33,7 @@
       (testing "can send and receive messages to/from a REP server"
         (dotimes [n 5]
           (zmq/send-msg socket (format "Hello #%s from client" (inc n)))
-          (let [msg (zmq/receive-msg socket :stringify true)]
+          (let [msg (zmq/receive-msg socket {:stringify true})]
             ; (println (format "CLIENT: Received msg: %s" msg))
             (is (= [(format "Hello #%s from server" (inc n))] msg)))))
       (testing "can send and receive multi-part messages"
@@ -42,7 +42,7 @@
                      (concat ["some" "strings" "and"]
                              (map #(.getBytes %) ["some" "byte" "arrays"]))]]
           (zmq/send-msg socket req)
-          (let [res (zmq/receive-msg socket :stringify true)]
+          (let [res (zmq/receive-msg socket {:stringify true})]
             ; (println (format "CLIENT: Received msg: %s" res))
             (is (= res (map #(String. %) req)))))))))
 

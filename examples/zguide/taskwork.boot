@@ -17,7 +17,7 @@
            sink (zmq/socket :push {:connect (format "tcp://*:%s" sink-port)})]
        (println "Ready for work!")
        (while true
-         (let [task-ms (-> (zmq/receive-msg vent :stringify true)
+         (let [task-ms (-> (zmq/receive-msg vent {:stringify true})
                            first
                            Integer/parseInt)]
            (printf "Doing a task that takes %d ms... " task-ms)

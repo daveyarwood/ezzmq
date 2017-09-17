@@ -30,7 +30,7 @@
       (testing "can receive messages from a PUSH server"
         (let [msgs (atom #{})]
           (doseq [_ (range 100)]
-            (let [[msg] (zmq/receive-msg pull :stringify true)]
+            (let [[msg] (zmq/receive-msg pull {:stringify true})]
               ; (println "CLIENT: Received msg:" msg)
               (swap! msgs conj (Integer/parseInt msg))))
           (is (= (set (range 100)) @msgs)))))))

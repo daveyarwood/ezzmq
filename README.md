@@ -157,7 +157,7 @@ To receive a message, use `ezzmq.core/receive-msg`:
 
 `(zmq/receive-msg socket)` will return a vector of byte arrays, where each byte array is one frame of the message.
 
-`(zmq/receive-msg socket :stringify true)` will return a vector of strings. This is convenient when you know the message frames are supposed to be strings.
+`(zmq/receive-msg socket {:stringify true})` will return a vector of strings. This is convenient when you know the message frames are supposed to be strings.
 
 To send a message, use `ezzmq.core/send-msg`:
 

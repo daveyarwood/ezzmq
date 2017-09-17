@@ -37,8 +37,8 @@
                                 `(fn []
                                    (let [~msg-var (receive-msg
                                                     ~socket
-                                                    :stringify
-                                                    (:stringify ~opts))]
+                                                    {:stringify
+                                                     (:stringify ~opts)})]
                                      ~item-body)))
                               ~@item-body)}))]
     `(let [poll-items# ~items

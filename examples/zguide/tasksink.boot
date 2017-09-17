@@ -17,7 +17,7 @@
 
        (let [start (System/currentTimeMillis)]
          (dotimes [n 100]
-           (let [result (-> (zmq/receive-msg sink :stringify true) first)]
+           (let [result (-> (zmq/receive-msg sink {:stringify true}) first)]
              (println (format "Task #%d result: %s" (inc n) result))))
          (let [end (System/currentTimeMillis)]
            (println (format "Total elapsed time: %d ms" (- end start)))))))))
