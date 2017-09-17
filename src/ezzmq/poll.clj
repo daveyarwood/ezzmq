@@ -86,11 +86,11 @@
         (if (= -1 poll-result)
           (abort nil)
           (let [got-msgs (atom #{})]
-            (doseq [{:keys [type index handler]} *poll-items*]
+            (doseq [{:keys [type index handler socket]} *poll-items*]
               (when (case type
                       :pollin  (.pollin  *poller* index)
                       :pollout (.pollout *poller* index)
                       :pollerr (.pollerr *poller* index))
-                (swap! got-msgs conj index)
+                (swap! got-msgs conj socket)
                 (handler)))
             @got-msgs))))))

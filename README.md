@@ -256,7 +256,7 @@ Here is an example of how to use `polling?` along with additional conditions to 
 
 `poll` triggers a chain of events where we go through the sockets in order and check to see if there are messages on each one. If there is a message, then the specified handling code for that socket is run.
 
-For cases where you need to take certain actions based on which sockets had messages each time you poll, you can use the return value of `ezzmq.core/poll`. The return value is a set of indexes representing which sockets had messages.
+For cases where you need to take certain actions based on which sockets had messages each time you poll, you can use the return value of `ezzmq.core/poll`, which is the set of sockets that had messages.
 
 For example:
 
@@ -276,7 +276,7 @@ For example:
 
   (zmq/while-polling
     (let [got-msgs (zmq/poll 1000)]
-      (when-not (contains? got-msgs 0)
+      (when-not (contains? got-msgs socket-a)
         (println "no msg received on socket-a")))))
 ```
 

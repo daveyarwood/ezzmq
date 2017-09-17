@@ -30,6 +30,9 @@
     (prn msg))
   ```
 
+* `poll` now returns the set of sockets that received messages, instead of the
+  set of indexes, which are less meaningful.
+
 ## 0.6.0 (2017-09-14)
 
 * Updated JeroMQ dependency to 0.4.2. I'm bumping the minor version of ezzmq

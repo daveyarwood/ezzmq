@@ -43,7 +43,7 @@
         (is (= org.zeromq.ZMQ$Socket (type pull))))
       (testing "can poll two sockets"
         (let [msgs  (atom #{})
-              tally (atom {0 0, 1 0})]
+              tally (atom {sub 0, pull 0})]
           (zmq/polling {:stringify true}
             [sub :pollin [msg]
              (do
@@ -62,6 +62,6 @@
                                       got-msgs)))))
           (testing "and receive all the messages"
             (is (= (set (range 100)) @msgs)))
-          (testing "and on each poll, the `poll` call returns a set of indexes
-                    representing sockets on which messages were received"
-            (is (= {0 50, 1 50} @tally))))))))
+          (testing "and on each poll, the `poll` call returns a set of sockets
+                    on which messages were received"
+            (is (= {sub 50, pull 50} @tally))))))))
