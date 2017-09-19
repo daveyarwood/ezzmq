@@ -18,7 +18,8 @@
   ([port]
    (zmq/with-new-context
      (let [socket (zmq/socket :pub {:bind (format "tcp://*:%s" port)})]
+       (println "Publishing weather updates...")
        (while true
          (let [msg (fake-weather-update-msg)]
-           (println "Sending msg:" msg)
+           ;; (println "Sending msg:" msg)
            (zmq/send-msg socket msg)))))))

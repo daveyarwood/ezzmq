@@ -11,12 +11,15 @@
   ([port]
    (println "Only one port specified; need two.")
    (System/exit 1))
-  ([vent-port sink-port]
+  ([vent-port sink-port & [initial-delay]]
    (zmq/with-new-context
      (let [vent (zmq/socket :push {:bind (format "tcp://*:%s" vent-port)})
            sink (zmq/socket :push {:connect (format "tcp://*:%s" sink-port)})]
-       (println "Press ENTER when the workers are ready.")
-       (read-line)
+       (if initial-delay
+         (Thread/sleep (Integer/parseInt initial-delay))
+         (do
+           (println "Press ENTER when the workers are ready.")
+           (read-line)))
        ; initial message to signal the start of the batch
        (zmq/send-msg sink "START BATCH")
 

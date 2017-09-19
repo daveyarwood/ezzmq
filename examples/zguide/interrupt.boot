@@ -7,7 +7,7 @@
 (def ^:const SOCKET-ADDRESS "inproc://testing123")
 
 (defn -main
-  []
+  [& [timeout-ms]]
   (zmq/with-new-context
     (zmq/before-shutdown
       (println "Interrupt received. Shutting down..."))
@@ -22,5 +22,10 @@
         (zmq/receive-msg server)))
 
     (Thread/sleep 100)
-    (println \newline "Waiting for Ctrl-C..." \newline)
-    (while true (Thread/sleep 100))))
+    (if timeout-ms
+      (do
+        (println "Waiting for" timeout-ms "ms...")
+        (Thread/sleep (Integer/parseInt timeout-ms)))
+      (do
+        (println \newline "Waiting for Ctrl-C..." \newline)
+        (while true (Thread/sleep 100))))))
