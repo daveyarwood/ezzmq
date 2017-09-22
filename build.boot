@@ -73,9 +73,9 @@
 
 (def examples-map (delay (into {} all-examples)))
 
-(defmacro errfmt
+(defn errfmt
   [msg & fmt-args]
-  `(throw (Exception. (format ~msg ~@fmt-args))))
+  (throw (Exception. (apply format msg fmt-args))))
 
 (defn find-example
   [example]
