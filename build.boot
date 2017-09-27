@@ -59,25 +59,36 @@
    :times - the number of instances of the process to start")
 
 (def all-examples
-  [["reqrep"      [["hwserver" :ports '[a]]
-                   ["hwclient" :ports '[a]]]]
-   ["pubsub"      [["wuserver" :ports '[a]]
-                   ["wuclient" :ports '[a] :args [27713]]
-                   ["wuclient" :ports '[a] :args [27278]]]]
-   ["pushpull"    [["taskvent" :ports '[vent sink] :args [7500]]
-                   ["tasksink" :ports '[sink]]
-                   ["taskwork" :ports '[vent sink] :times 3]]]
-   ["polling"     [["mspoller" :ports '[a b]]
-                   ["taskvent" :ports '[a _] :args [1000]]
-                   ["wuserver" :ports '[b]]]]
-   ["interrupt"   [["interrupt" :args [5000]]]]
-   ["rrbroker"    [["hwclient" :ports '[frontend] :times 2]
-                   ["rrbroker" :ports '[frontend backend]]
-                   ["rrworker" :ports '[backend] :times 2]]]
-   ["pubsubproxy" [["wuserver" :ports '[a]]
-                   ["wuproxy" :ports '[a b]]
-                   ["wuclient" :ports '[b] :args [27713]]
-                   ["wuclient" :ports '[b] :args [27278]]]]])
+  [["reqrep"
+    [["hwserver" :ports '[a]]
+     ["hwclient" :ports '[a]]]]
+   ["pubsub"
+    [["wuserver" :ports '[a]]
+     ["wuclient" :ports '[a] :args [27713]]
+     ["wuclient" :ports '[a] :args [27278]]]]
+   ["pushpull"
+    [["taskvent" :ports '[vent sink] :args [5000]]
+     ["tasksink" :ports '[sink]]
+     ["taskwork" :ports '[vent sink] :times 3]]]
+   ["polling"
+    [["mspoller" :ports '[a b]]
+     ["taskvent" :ports '[a _] :args [1000]]
+     ["wuserver" :ports '[b]]]]
+   ["interrupt"
+    [["interrupt" :args [5000]]]]
+   ["rrbroker"
+    [["hwclient" :ports '[frontend] :times 2]
+     ["rrbroker" :ports '[frontend backend]]
+     ["rrworker" :ports '[backend] :times 2]]]
+   ["pubsubproxy"
+    [["wuserver" :ports '[a]]
+     ["wuproxy" :ports '[a b]]
+     ["wuclient" :ports '[b] :args [27713]]
+     ["wuclient" :ports '[b] :args [27278]]]]
+   ["pushpull-with-kill-signal"
+    [["taskvent" :ports '[vent sink] :args [5000]]
+     ["tasksink2" :ports '[sink ctrl]]
+     ["taskwork2" :ports '[vent sink ctrl] :times 3]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
