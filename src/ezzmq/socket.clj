@@ -1,5 +1,6 @@
 (ns ezzmq.socket
-  (:require [ezzmq.context :as ctx])
+  (:require [ezzmq.context :as ctx]
+            [ezzmq.util    :as util])
   (:import [org.zeromq ZMQ ZMQ$Context ZContext]))
 
 (defprotocol SocketMaker
@@ -12,7 +13,7 @@
   ZMQ$Context
   (create-socket [ctx socket-type] (.socket ctx socket-type)))
 
-; shamelessly stolen from cljzmq
+;; shamelessly stolen from cljzmq
 (def ^:const socket-types
   {:pair   ZMQ/PAIR
    :pub    ZMQ/PUB
@@ -28,24 +29,39 @@
    :pull   ZMQ/PULL
    :push   ZMQ/PUSH})
 
+(defn- socket-type-lookup
+  [socket-type-kw]
+  (or (get socket-types socket-type-kw)
+      (util/errfmt "Invalid socket type: %s" socket-type-kw)))
+
+(defn- socket-type=
+  [& args]
+  (let [sts (map #(if (keyword? %) (get socket-types %) %) args)]
+    (if (some #(not ((set (vals socket-types)) %)) sts)
+      (util/errfmt (str "Arguments to `socket-type=` must be valid ZMQ socket "
+                        "type constants or their keyword representations."))
+      (apply = sts))))
+
+(defn- socket-type-is-one-of
+  [socket-type-kws socket-type]
+  (contains? (set (map socket-type-lookup socket-type-kws)) socket-type))
+
 (defn socket
-  [socket-type & [opts]]
-  (if-let [socket-type (get socket-types socket-type)]
-    (let [socket (create-socket ctx/*context* socket-type)
-          {:keys [bind connect subscribe]} opts]
-      (when bind
-        (let [bindings (if (coll? bind) bind [bind])]
-          (doseq [b bindings]
-            (.bind socket b))))
-      (when connect
-        (let [connections (if (coll? connect) connect [connect])]
-          (doseq [c connections]
-            (.connect socket c))))
-      (when (= (get socket-types :sub) socket-type)
-        (let [topics (if (coll? subscribe) subscribe [(or subscribe "")])]
-          (doseq [t topics]
-            (let [topic (if (string? t) (.getBytes t) t)]
-              (.subscribe socket topic)))))
-      socket)
-    (throw (Exception. (format "Invalid socket type: %s" socket-type)))))
+  [socket-type-kw & [{:keys [bind connect subscribe]}]]
+  (let [socket-type (socket-type-lookup socket-type-kw)
+        socket      (create-socket ctx/*context* socket-type)]
+    (when bind
+      (let [bindings (if (coll? bind) bind [bind])]
+        (doseq [b bindings]
+          (.bind socket b))))
+    (when connect
+      (let [connections (if (coll? connect) connect [connect])]
+        (doseq [c connections]
+          (.connect socket c))))
+    (when (socket-type= :sub socket-type)
+      (let [topics (if (coll? subscribe) subscribe [(or subscribe "")])]
+        (doseq [t topics]
+          (let [topic (if (string? t) (.getBytes t) t)]
+            (.subscribe socket topic)))))
+    socket))
 
