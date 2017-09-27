@@ -17,7 +17,7 @@
    (System/exit 1))
   ([port]
    (zmq/with-new-context
-     (let [socket (zmq/socket :pub {:bind (format "tcp://*:%s" port)})]
+     (let [socket (zmq/socket :pub {:bind (str "tcp://*:" port)})]
        (println "Publishing weather updates...")
        (while true
          (let [msg (fake-weather-update-msg)]

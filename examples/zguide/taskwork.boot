@@ -13,8 +13,8 @@
    (System/exit 1))
   ([vent-port sink-port]
    (zmq/with-new-context
-     (let [vent (zmq/socket :pull {:connect (format "tcp://*:%s" vent-port)})
-           sink (zmq/socket :push {:connect (format "tcp://*:%s" sink-port)})]
+     (let [vent (zmq/socket :pull {:connect (str "tcp://*:" vent-port)})
+           sink (zmq/socket :push {:connect (str "tcp://*:" sink-port)})]
        (println "Ready for work!")
        (while true
          (let [task-ms (-> (zmq/receive-msg vent {:stringify true})

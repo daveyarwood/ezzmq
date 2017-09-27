@@ -13,10 +13,8 @@
    (System/exit 1))
   ([frontend-port backend-port]
    (zmq/with-new-context
-     (let [frontend (zmq/socket :router {:bind (format "tcp://*:%s"
-                                                       frontend-port)})
-           backend (zmq/socket :dealer {:bind (format "tcp://*:%s"
-                                                      backend-port)})]
+     (let [frontend (zmq/socket :router {:bind (str "tcp://*:" frontend-port)})
+           backend  (zmq/socket :dealer {:bind (str "tcp://*:" backend-port)})]
        (println "Proxying messages...")
        (zmq/polling {}
          [frontend :pollin [msg]

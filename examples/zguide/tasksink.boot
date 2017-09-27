@@ -10,7 +10,7 @@
    (System/exit 1))
   ([port]
    (zmq/with-new-context
-     (let [sink (zmq/socket :pull {:bind (format "tcp://*:%s" port)})]
+     (let [sink (zmq/socket :pull {:bind (str "tcp://*:" port)})]
        (println "Waiting for a message signaling start of batch...")
        (zmq/receive-msg sink)
        (println "Signal received. Collecting results...")

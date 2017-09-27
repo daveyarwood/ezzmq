@@ -13,8 +13,8 @@
    (System/exit 1))
   ([vent-port sink-port & [initial-delay]]
    (zmq/with-new-context
-     (let [vent (zmq/socket :push {:bind (format "tcp://*:%s" vent-port)})
-           sink (zmq/socket :push {:connect (format "tcp://*:%s" sink-port)})]
+     (let [vent (zmq/socket :push {:bind (str "tcp://*:" vent-port)})
+           sink (zmq/socket :push {:connect (str "tcp://*:" sink-port)})]
        (if initial-delay
          (Thread/sleep (Integer/parseInt initial-delay))
          (do

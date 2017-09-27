@@ -11,7 +11,7 @@
   ([port & [zip-code]]
    (zmq/with-new-context
      (let [zip-code (or zip-code "10001")
-           socket (zmq/socket :sub {:connect   (format "tcp://*:%s" port)
+           socket (zmq/socket :sub {:connect   (str "tcp://*:" port)
                                     :subscribe zip-code})]
        (println (format "Receiving updates for zip code %s..." zip-code))
        (loop [n 0 temperature-sum 0]

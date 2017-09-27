@@ -10,7 +10,7 @@
    (System/exit 1))
   ([port]
    (zmq/with-new-context
-     (let [socket (zmq/socket :req {:connect (format "tcp://*:%s" port)})
+     (let [socket (zmq/socket :req {:connect (str "tcp://*:" port)})
            req    "Hello from client"]
        (while true
          (println "Sending msg:" req)

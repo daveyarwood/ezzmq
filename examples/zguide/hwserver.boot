@@ -10,7 +10,7 @@
    (System/exit 1))
   ([port]
    (zmq/with-new-context
-     (let [socket (zmq/socket :rep {:bind (format "tcp://*:%s" port)})
+     (let [socket (zmq/socket :rep {:bind (str "tcp://*:" port)})
            res    "Hello from server"]
        (println "Waiting for requests...")
        (while true
