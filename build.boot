@@ -69,7 +69,10 @@
    ["polling"   [["mspoller" :ports '[a b]]
                  ["taskvent" :ports '[a _] :args [1000]]
                  ["wuserver" :ports '[b]]]]
-   ["interrupt" [["interrupt" :args [5000]]]]])
+   ["interrupt" [["interrupt" :args [5000]]]]
+   ["rrbroker"  [["hwclient" :ports '[frontend] :times 2]
+                 ["rrbroker" :ports '[frontend backend]]
+                 ["rrworker" :ports '[backend] :times 2]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
