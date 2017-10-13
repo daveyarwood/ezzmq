@@ -67,7 +67,7 @@
      ["wuclient" :ports '[a] :args [27713]]
      ["wuclient" :ports '[a] :args [27278]]]]
    ["pushpull"
-    [["taskvent" :ports '[vent sink] :args [5000]]
+    [["taskvent" :ports '[vent sink] :args [3000]]
      ["tasksink" :ports '[sink]]
      ["taskwork" :ports '[vent sink] :times 3]]]
    ["polling"
@@ -86,9 +86,12 @@
      ["wuclient" :ports '[b] :args [27713]]
      ["wuclient" :ports '[b] :args [27278]]]]
    ["pushpull-with-kill-signal"
-    [["taskvent" :ports '[vent sink] :args [5000]]
+    [["taskvent" :ports '[vent sink] :args [3000]]
      ["tasksink2" :ports '[sink ctrl]]
-     ["taskwork2" :ports '[vent sink ctrl] :times 3]]]])
+     ["taskwork2" :ports '[vent sink ctrl] :times 3]]]
+   ["mtserver"
+    [["mtserver" :ports '[a]]
+     ["hwclient" :ports '[a] :times 3]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
