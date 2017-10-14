@@ -91,7 +91,9 @@
      ["taskwork2" :ports '[vent sink ctrl] :times 3]]]
    ["mtserver"
     [["mtserver" :ports '[a]]
-     ["hwclient" :ports '[a] :times 3]]]])
+     ["hwclient" :ports '[a] :times 3]]]
+   ["mtrelay"
+    [["mtrelay"]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
