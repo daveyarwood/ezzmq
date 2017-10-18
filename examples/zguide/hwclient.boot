@@ -5,16 +5,13 @@
 (require '[ezzmq.core :as zmq])
 
 (defn -main
-  ([]
-   (println "No port specified.")
-   (System/exit 1))
-  ([port]
-   (zmq/with-new-context
-     (let [socket (zmq/socket :req {:connect (str "tcp://*:" port)})
-           req    "Hello from client"]
-       (while true
-         (println "Sending msg:" req)
-         (zmq/send-msg socket req)
+  [port]
+  (zmq/with-new-context
+    (let [socket (zmq/socket :req {:connect (str "tcp://*:" port)})
+          req    "Hello from client"]
+      (while true
+        (println "Sending msg:" req)
+        (zmq/send-msg socket req)
 
-         (let [res (zmq/receive-msg socket {:stringify true})]
-           (println "Received msg:" res)))))))
+        (let [res (zmq/receive-msg socket {:stringify true})]
+          (println "Received msg:" res))))))

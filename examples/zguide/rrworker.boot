@@ -5,18 +5,15 @@
 (require '[ezzmq.core :as zmq])
 
 (defn -main
-  ([]
-   (println "No port specified.")
-   (System/exit 1))
-  ([port]
-   (zmq/with-new-context
-     (let [socket (zmq/socket :rep {:connect (str "tcp://*:" port)})
-           res    "Hello from worker"]
-       (println "Waiting for requests...")
-       (while true
-         (let [req (zmq/receive-msg socket {:stringify true})]
-           (println "Received msg:" req)
-           (Thread/sleep 1000)) ; simulate doing some work
+  [port]
+  (zmq/with-new-context
+    (let [socket (zmq/socket :rep {:connect (str "tcp://*:" port)})
+          res    "Hello from worker"]
+      (println "Waiting for requests...")
+      (while true
+        (let [req (zmq/receive-msg socket {:stringify true})]
+          (println "Received msg:" req)
+          (Thread/sleep 1000)) ; simulate doing some work
 
-         (println "Sending msg:" res)
-         (zmq/send-msg socket res))))))
+        (println "Sending msg:" res)
+        (zmq/send-msg socket res)))))

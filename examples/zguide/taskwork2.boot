@@ -5,40 +5,31 @@
 (require '[ezzmq.core :as zmq])
 
 (defn -main
-  ([]
-   (println "No ports specified.")
-   (System/exit 1))
-  ([port]
-   (println "Only one port specified; need three.")
-   (System/exit 1))
-  ([port1 port2]
-   (println "Only two ports specified; need three.")
-   (System/exit 1))
-  ([vent-port sink-port ctrl-port]
-   (zmq/with-new-context
-     (zmq/before-shutdown
-       (println "Shutting down..."))
+  [vent-port sink-port ctrl-port]
+  (zmq/with-new-context
+    (zmq/before-shutdown
+      (println "Shutting down..."))
 
-     (let [vent     (zmq/socket :pull {:connect (str "tcp://*:" vent-port)})
-           sink     (zmq/socket :push {:connect (str "tcp://*:" sink-port)})
-           ctrl     (zmq/socket :sub  {:connect (str "tcp://*:" ctrl-port)})
-           running? (atom true)]
-       (println "Ready for work!")
+    (let [vent     (zmq/socket :pull {:connect (str "tcp://*:" vent-port)})
+          sink     (zmq/socket :push {:connect (str "tcp://*:" sink-port)})
+          ctrl     (zmq/socket :sub  {:connect (str "tcp://*:" ctrl-port)})
+          running? (atom true)]
+      (println "Ready for work!")
 
-       (zmq/polling {:stringify true}
-         [vent :pollin [[task-ms]]
-          (do
-            (printf "Doing a task that takes %s ms... " task-ms)
-            (flush)
-            (Thread/sleep (Integer/parseInt task-ms))
-            (println "done.")
-            (zmq/send-msg sink "success"))
+      (zmq/polling {:stringify true}
+        [vent :pollin [[task-ms]]
+         (do
+           (printf "Doing a task that takes %s ms... " task-ms)
+           (flush)
+           (Thread/sleep (Integer/parseInt task-ms))
+           (println "done.")
+           (zmq/send-msg sink "success"))
 
-          ctrl :pollin [_]
-          ;; any msg sent on the control socket is interpreted as a kill signal
-          (do
-            (println "Received KILL signal.")
-            (reset! running? false))]
+         ctrl :pollin [_]
+         ;; any msg sent on the control socket is interpreted as a kill signal
+         (do
+           (println "Received KILL signal.")
+           (reset! running? false))]
 
-         (while (and (zmq/polling?) @running?)
-           (zmq/poll 100)))))))
+        (while (and (zmq/polling?) @running?)
+          (zmq/poll 100))))))

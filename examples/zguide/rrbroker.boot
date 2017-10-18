@@ -5,23 +5,17 @@
 (require '[ezzmq.core :as zmq])
 
 (defn -main
-  ([]
-   (println "No port specified.")
-   (System/exit 1))
-  ([port]
-   (println "Need two ports.")
-   (System/exit 1))
-  ([frontend-port backend-port]
-   (zmq/with-new-context
-     (let [frontend (zmq/socket :router {:bind (str "tcp://*:" frontend-port)})
-           backend  (zmq/socket :dealer {:bind (str "tcp://*:" backend-port)})]
-       (println "Proxying messages...")
-       (zmq/polling {}
-         [frontend :pollin [msg]
-          (zmq/send-msg backend msg)
+  [frontend-port backend-port]
+  (zmq/with-new-context
+    (let [frontend (zmq/socket :router {:bind (str "tcp://*:" frontend-port)})
+          backend  (zmq/socket :dealer {:bind (str "tcp://*:" backend-port)})]
+      (println "Proxying messages...")
+      (zmq/polling {}
+        [frontend :pollin [msg]
+         (zmq/send-msg backend msg)
 
-          backend :pollin [msg]
-          (zmq/send-msg frontend msg)]
+         backend :pollin [msg]
+         (zmq/send-msg frontend msg)]
 
-         (zmq/while-polling
-           (zmq/poll)))))))
+        (zmq/while-polling
+          (zmq/poll))))))

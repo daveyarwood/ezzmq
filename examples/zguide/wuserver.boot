@@ -12,14 +12,11 @@
     (format "%05d %d %d" zip-code temp humidity)))
 
 (defn -main
-  ([]
-   (println "No port specified.")
-   (System/exit 1))
-  ([port]
-   (zmq/with-new-context
-     (let [socket (zmq/socket :pub {:bind (str "tcp://*:" port)})]
-       (println "Publishing weather updates...")
-       (while true
-         (let [msg (fake-weather-update-msg)]
-           ;; (println "Sending msg:" msg)
-           (zmq/send-msg socket msg)))))))
+  [port]
+  (zmq/with-new-context
+    (let [socket (zmq/socket :pub {:bind (str "tcp://*:" port)})]
+      (println "Publishing weather updates...")
+      (while true
+        (let [msg (fake-weather-update-msg)]
+          ;; (println "Sending msg:" msg)
+          (zmq/send-msg socket msg))))))
