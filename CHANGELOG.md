@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## 0.7.1 (2017-10-18)
+
+* Added support for conveniently setting several options on a socket upon
+  creating it:
+
+  * `:send-hwm`
+  * `:receive-hwm`
+  * `:linger`
+
+  There are a lot more ZeroMQ socket options that we could support, and we can
+  add them as needed. PRs welcome!
+
+  Example usage:
+
+  ```clojure
+  (zmq/socket :pub {:bind "tcp://*:12345" :send-hwm 10000})
+  ```
+
 ## 0.7.0 (2017-09-16)
 
 * **BREAKING CHANGE**: `send-msg` and `receive-msg` now take an explicit options

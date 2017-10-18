@@ -18,7 +18,7 @@
 
 (import '[java.net ServerSocket])
 
-(def +version+ "0.7.0")
+(def +version+ "0.7.1")
 (bootlaces! +version+)
 
 (task-options!
