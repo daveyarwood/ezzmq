@@ -47,7 +47,8 @@
   (contains? (set (map socket-type-lookup socket-type-kws)) socket-type))
 
 (defn socket
-  [socket-type-kw & [{:keys [bind connect subscribe]}]]
+  [socket-type-kw & [{:keys [bind connect subscribe
+                             send-hwm receive-hwm linger]}]]
   (let [socket-type (socket-type-lookup socket-type-kw)
         socket      (create-socket ctx/*context* socket-type)]
     (when bind
@@ -63,5 +64,8 @@
         (doseq [t topics]
           (let [topic (if (string? t) (.getBytes t) t)]
             (.subscribe socket topic)))))
+    (when send-hwm (.setSndHWM socket send-hwm))
+    (when receive-hwm (.setRcvHWM socket receive-hwm))
+    (when linger (.setLinger socket linger))
     socket))
 
