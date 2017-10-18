@@ -93,7 +93,10 @@
     [["mtserver" :ports '[a]]
      ["hwclient" :ports '[a] :times 3]]]
    ["mtrelay"
-    [["mtrelay"]]]])
+    [["mtrelay"]]]
+   ["pubsubsync"
+    [["syncpub" :ports '[a b] :args [4 10000 500]]
+     ["syncsub" :ports '[a b] :times 4]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
