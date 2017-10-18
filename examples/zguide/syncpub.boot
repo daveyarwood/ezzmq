@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.7.0"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.7.1"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -21,7 +21,7 @@
       ;; Give the subscribers a little time to start receiving messages.
       ;; This seems to be necessary, otherwise a handful of messages can squeak
       ;; through before a subscriber can receive them.
-      (Thread/sleep 2500)
+      (Thread/sleep 1000)
       (println "Broadcasting" messages-to-send "messages...")
       (dotimes [n (Integer/parseInt messages-to-send)]
         (zmq/send-msg pub (str "Message " n)))

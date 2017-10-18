@@ -201,3 +201,16 @@
 
       :else
       (util/errfmt "Invalid options. See `boot examples --help.` for usage."))))
+
+(deftask update-examples
+  "Updates ezzmq dependency in each example script to the current version
+   specified here in build.boot."
+  []
+  (with-pass-thru _
+    (doseq [file (->> "examples" io/file file-seq (drop 2))
+            :let [content (slurp file)
+                  updated-content (str/replace
+                                    content
+                                    #"(io\.djy/ezzmq) \"[^\"]+\""
+                                    (format "$1 \"%s\"" +version+))]]
+      (spit file updated-content))))
