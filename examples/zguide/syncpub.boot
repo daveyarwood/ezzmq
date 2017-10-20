@@ -18,10 +18,6 @@
           (zmq/receive-msg rep)
           (zmq/send-msg rep "Subscriber counted.")
           (recur (inc subscribers))))
-      ;; Give the subscribers a little time to start receiving messages.
-      ;; This seems to be necessary, otherwise a handful of messages can squeak
-      ;; through before a subscriber can receive them.
-      (Thread/sleep 1000)
       (println "Broadcasting" messages-to-send "messages...")
       (dotimes [n (Integer/parseInt messages-to-send)]
         (zmq/send-msg pub (str "Message " n)))

@@ -10,6 +10,8 @@
     (let [sub (zmq/socket :sub {:connect     (str "tcp://*:" sub-port)
                                 :receive-hwm 0})
           req (zmq/socket :req {:connect (str "tcp://*:" sync-port)})]
+      ;; Give the SUB socket a little time to connect.
+      (Thread/sleep 1000)
       (println "Notifying publisher that I'm ready for messages.")
       (zmq/send-msg req "Ready for messages.")
       (zmq/receive-msg req) ; wait for reply
