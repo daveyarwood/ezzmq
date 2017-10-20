@@ -94,9 +94,12 @@
      ["hwclient" :ports '[a] :times 3]]]
    ["mtrelay"
     [["mtrelay"]]]
-   ["pubsubsync"
+   ["pubsub-sync"
     [["syncpub" :ports '[a b] :args [4 10000 500]]
-     ["syncsub" :ports '[a b] :times 4]]]])
+     ["syncsub" :ports '[a b] :times 4]]]
+   ["pubsub-envelope"
+    [["psenvpub" :ports '[a]]
+     ["psenvsub" :ports '[a]]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
