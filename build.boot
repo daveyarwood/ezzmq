@@ -18,7 +18,7 @@
 
 (import '[java.net ServerSocket])
 
-(def +version+ "0.7.1")
+(def +version+ "0.7.2")
 (bootlaces! +version+)
 
 (task-options!
@@ -99,7 +99,9 @@
      ["syncsub" :ports '[a b] :times 4]]]
    ["pubsub-envelope"
     [["psenvpub" :ports '[a]]
-     ["psenvsub" :ports '[a]]]]])
+     ["psenvsub" :ports '[a]]]]
+   ["identity"
+    [["identity"]]]])
 
 (def examples-map (delay (into {} all-examples)))
 

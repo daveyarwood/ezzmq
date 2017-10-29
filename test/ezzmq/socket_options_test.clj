@@ -5,9 +5,9 @@
   (:import [org.zeromq ZMQ$Socket]))
 
 (use-fixtures :once
-              (fn [run-tests]
-                (util/for-each-context-type
-                  (run-tests))))
+  (fn [run-tests]
+    (util/for-each-context-type
+      (run-tests))))
 
 (def ^:dynamic *port* nil)
 
@@ -68,4 +68,16 @@
               (is (= ZMQ$Socket (type socket))))
             (testing (str option-key "option correctly sets " option-name)
               (is (= 42 (get-fn socket))))))))))
+
+(deftest socket-identity-test
+  (zmq/with-new-context
+    (testing "setting a socket's identity"
+      (let [location "inproc://identity-test"
+            router   (zmq/socket :router {:bind location})
+            req      (zmq/socket :req {:identity "geegaw" :connect location})]
+        (zmq/send-msg req "oh, hello")
+        (let [[id sep msg] (zmq/receive-msg router {:stringify true})]
+          (is (= "geegaw" id))
+          (is (= "" sep))
+          (is (= "oh, hello" msg)))))))
 

@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.7.2 (2017-10-29)
+
+* Added support for setting socket identity via a new socket option: `:identity`
+
+  Example usage:
+
+  ```clojure
+  (zmq/socket :req {:identity "dave" :connect "inproc://somewhere"})
+  ```
+
 ## 0.7.1 (2017-10-18)
 
 * Added support for conveniently setting several options on a socket upon
