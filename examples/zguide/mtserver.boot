@@ -43,7 +43,7 @@
     (dotimes [i (Integer/parseInt workers)]
       (let [worker-log #(println (format "WORKER %d: %s" i %))]
         (zmq/worker-thread
-          {:on-interrupt #(worker-log "WORKER: Interrupted. Shutting down...")}
+          {:on-interrupt #(worker-log "Interrupted. Shutting down...")}
           (let [socket (zmq/socket :rep {:connect "inproc://workers"})
                 res    "Hello from worker"]
             (worker-log "Waiting for requests...")
