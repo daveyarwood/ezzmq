@@ -57,12 +57,39 @@
     (let [frontend (zmq/socket :router {:bind (str "tcp://*:" port)})
           backend  (zmq/socket :dealer {:bind "inproc://workers"})]
       (println "SERVER: Proxying messages...")
-      (zmq/polling {}
+
+      #_(org.zeromq.ZMQ/proxy frontend backend nil)
+
+      (let [in-poller  (zmq/create-poller ezzmq.context/*context* 2)
+            out-poller (zmq/create-poller ezzmq.context/*context* 2)]
+        (.register in-poller  frontend (:pollin zmq/poll-types))
+        (.register in-poller  backend  (:pollin zmq/poll-types))
+        (.register out-poller frontend (:pollout zmq/poll-types))
+        (.register out-poller backend  (:pollout zmq/poll-types))
+        (while true
+          (.poll in-poller)
+          (.poll out-poller)
+          (when (and (.pollin in-poller 0)
+                     (.pollout out-poller 1))
+            (let [msg (zmq/receive-msg frontend)]
+              (zmq/send-msg backend msg)))
+          (when (and (.pollin in-poller 1)
+                     (.pollout out-poller 0))
+            (let [msg (zmq/receive-msg backend)]
+              (zmq/send-msg frontend msg)))))
+
+      #_(zmq/polling {}
         [frontend :pollin [msg]
-         (zmq/send-msg backend msg)
+         (do
+           (prn :frontend (let [[id sep msg] msg]
+                            [(map int id) (String. sep) (String. msg)]))
+           (zmq/send-msg backend msg))
 
          backend :pollin [msg]
-         (zmq/send-msg frontend msg)]
+         (do
+           (prn :backend (let [[id sep msg] msg]
+                           [(map int id) (String. sep) (String. msg)]))
+           (zmq/send-msg frontend msg))]
 
         (zmq/while-polling
           (zmq/poll))))))
