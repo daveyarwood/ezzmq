@@ -6,14 +6,14 @@
            [zmq ZError$IOException]))
 
 (defprotocol PollerMaker
-  (create-poller [ctx socket-type]))
+  (create-poller [ctx num-items]))
 
 (extend-protocol PollerMaker
   ZContext
-  (create-poller [ctx socket-type] (.createPoller ctx socket-type))
+  (create-poller [ctx num-items] (.createPoller ctx num-items))
 
   ZMQ$Context
-  (create-poller [ctx socket-type] (.poller ctx socket-type)))
+  (create-poller [ctx num-items] (.poller ctx num-items)))
 
 (def ^:const poll-types
   {:pollin  ZMQ$Poller/POLLIN
