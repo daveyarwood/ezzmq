@@ -101,7 +101,9 @@
     [["psenvpub" :ports '[a]]
      ["psenvsub" :ports '[a]]]]
    ["identity"
-    [["identity"]]]])
+    [["identity"]]]
+   ["rtreq"
+    [["rtreq" :ports '[a] :args [5]]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
