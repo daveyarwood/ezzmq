@@ -90,8 +90,8 @@
      ["tasksink2" :ports '[sink ctrl]]
      ["taskwork2" :ports '[vent sink ctrl] :times 3]]]
    ["mtserver"
-    [["mtserver" :ports '[a]]
-     ["hwclient" :ports '[a] :times 3]]]
+    [["mtserver" :ports '[a] :args [3]]
+     ["hwclient" :ports '[a] :times 4]]]
    ["mtrelay"
     [["mtrelay"]]]
    ["pubsub-sync"

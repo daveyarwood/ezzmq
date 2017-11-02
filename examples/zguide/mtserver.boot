@@ -5,7 +5,7 @@
 (require '[ezzmq.core :as zmq])
 
 (defn -main
-  [port]
+  [port workers]
   (zmq/with-new-context
     ;; Interrupting the process occasionally results in
     ;; IndexOutOfBoundsException, ArrayIndexOutOfBoundException, or the process
@@ -17,7 +17,7 @@
       (println "Done."))
 
     (println "Starting worker threads...")
-    (dotimes [i 5]
+    (dotimes [i (Integer/parseInt workers)]
       (let [worker-log #(println (format "WORKER %d: %s" i %))]
         (zmq/worker-thread
           {:on-interrupt #(worker-log "WORKER: Interrupted. Shutting down...")}
