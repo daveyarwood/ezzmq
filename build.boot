@@ -103,7 +103,9 @@
    ["identity"
     [["identity"]]]
    ["rtreq"
-    [["rtreq" :ports '[a] :args [5]]]]])
+    [["rtreq" :ports '[a] :args [5]]]]
+   ["rtdealer"
+    [["rtdealer" :ports '[a] :args [5]]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
