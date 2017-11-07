@@ -155,6 +155,9 @@
                     (say line)))]
     (future (funnel (:out proc)))
     (future (funnel (:err proc)))
+    ;; Sledgehammer to ensure the process dies after the timeout elapses.
+    (future (Thread/sleep timeout-ms) (.destroyForcibly (:process proc)))
+    ;; Exits early if process ends before timeout.
     (future (sh/exit-code proc timeout-ms))))
 
 (defn run-example
