@@ -48,6 +48,8 @@ If you're on board with these opinions, then ezzmq will probably be up your alle
 
 ## Usage
 
+> To see some practical examples of how to use ezzmq, you may be interested in checking out [these implementations](https://github.com/daveyarwood/ezzmq/tree/master/examples/zguide) of the official ZeroMQ [ZGuide](http://zguide.zeromq.org/) examples.
+
 ### ZMQ Context
 
 Any program you write that uses ZMQ will involve working with sockets. To create and manage sockets, you need a **context**.
@@ -174,8 +176,6 @@ The message you send can either be a single string, a single byte array, or a se
 ```clojure
 (zmq/send-msg socket ["this" "is" "a" "multipart" (.getBytes "message")])
 ```
-
-To see some practical examples of how to use ezzmq, you may be interested in checking out [these implementations](https://github.com/daveyarwood/ezzmq/tree/master/examples/zguide) of the official ZeroMQ [ZGuide](http://zguide.zeromq.org/) examples.
 
 ### Polling
 
