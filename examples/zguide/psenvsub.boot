@@ -12,4 +12,4 @@
       (println "Receiving B messages...")
       (while true
         (let [[topic contents] (zmq/receive-msg socket {:stringify true})]
-          (println (format "[%s] %s" topic contents)))))))
+          (println (format "Received: [%s] %s" topic contents)))))))

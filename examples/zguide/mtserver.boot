@@ -52,7 +52,7 @@
                 (worker-log (str "Received msg: " req))
                 (Thread/sleep 1000)) ; simulate doing some work
 
-              (worker-log (str "Sending msg: " res))
+              ;; (worker-log (str "Sending msg: " res))
               (zmq/send-msg socket res))))))
     (let [frontend (zmq/socket :router {:bind (str "tcp://*:" port)})
           backend  (zmq/socket :dealer {:bind "inproc://workers"})]

@@ -10,7 +10,7 @@
     (let [socket (zmq/socket :req {:connect (str "tcp://*:" port)})
           req    "Hello from client"]
       (while true
-        (println "Sending msg:" req)
+        ;; (println "Sending msg:" req)
         (zmq/send-msg socket req)
 
         (let [res (zmq/receive-msg socket {:stringify true})]

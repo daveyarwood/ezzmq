@@ -15,5 +15,5 @@
           (println "Received msg:" req)
           (Thread/sleep 1000)) ; simulate doing some work
 
-        (println "Sending msg:" res)
+        ;; (println "Sending msg:" res)
         (zmq/send-msg socket res)))))
