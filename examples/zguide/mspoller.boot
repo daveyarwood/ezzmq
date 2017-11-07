@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.7.2"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.8.0"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -10,7 +10,7 @@
     (let [pull (zmq/socket :pull {:connect (str "tcp://*:" port1)})
           sub  (zmq/socket :sub  {:connect (str "tcp://*:" port2)
                                   :subscribe "10001"})]
-      (zmq/polling {:stringify true}
+      (zmq/polling {:receive-opts {:stringify true}}
         [pull :pollin [msg] ; connect to task ventilator
          (println (format "PULL: got msg: %s" msg))
 

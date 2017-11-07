@@ -1,5 +1,60 @@
 # CHANGELOG
 
+## 0.8.0 (2017-11-05)
+
+* For greater flexibility when using pollers, some of the implementation of the
+  ezzmq polling code has been refactored into a lower-level API:
+
+  * `zmq/poller` creates a poller, registers poll items, and stores poll item
+    callbacks and an atom tracking whether the poller is still able to poll.
+
+  * `zmq/polling?` now takes an optional `zmq/poller` argument, and returns true
+    if the current thread hasn't been interrupted and that poller is still able
+    to poll.
+
+  * `zmq/poll` now takes an optional `zmq/poller` argument, and polls that
+    poller specifically.
+
+  These lower-level polling functions make it possible to write ezzmq code
+  involving multiple pollers, e.g. for complex setups where you only want to
+  poll certain sockets each time through a loop, depending on certain conditions
+  that can change over time. See the [`lbbroker` example][lbbroker] for an
+  example of the low-level API in action.
+
+* Refactored the existing (higher-level) polling API to use the lower-level
+  polling code.
+
+  Existing polling code will still work without changes, with the exception of
+  two small breaking changes (see below).
+
+* **BREAKING CHANGE**: The `zmq/polling` macro options map now has two top-level
+  keys, `send-opts` and `receive-opts`, which are passed on to the `send-msg`
+  and `receive-msg` functions internally. Before, this was just a flat map of
+  options, only one of which was supported: `stringify` -- the value was passed
+  on to the `receive-msg` function. So, any code looking like this:
+
+  ```clojure
+  (zmq/polling {:stringify true} ...)
+  ```
+
+  ...must be rewritten to look like this:
+
+  ```clojure
+  (zmq/polling {:receive-opts {:stringify true}} ...)
+  ```
+
+* **BREAKING CHANGE**: The first argument to `zmq/poll` is now a proper options map, instead of an optional `timeout` argument. So, any code looking like this:
+
+	```clojure
+	(zmq/poll 1000)
+	```
+
+	...must be rewritten to look like this:
+
+	```clojure
+	(zmq/poll {:timeout 1000})
+	```
+
 ## 0.7.2 (2017-10-29)
 
 * Added support for setting socket identity via a new socket option: `:identity`
@@ -157,3 +212,6 @@
 ## 0.1.0 (2016-10-13)
 
 * Initial release.
+
+[lbbroker]: https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/lbbroker.boot
+

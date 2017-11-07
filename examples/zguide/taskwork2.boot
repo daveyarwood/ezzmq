@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.7.2"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.8.0"]])
 
 (require '[ezzmq.core :as zmq])
 
@@ -16,7 +16,7 @@
           running? (atom true)]
       (println "Ready for work!")
 
-      (zmq/polling {:stringify true}
+      (zmq/polling {:receive-opts {:stringify true}}
         [vent :pollin [[task-ms]]
          (do
            (printf "Doing a task that takes %s ms... " task-ms)
@@ -32,4 +32,4 @@
            (reset! running? false))]
 
         (while (and (zmq/polling?) @running?)
-          (zmq/poll 100))))))
+          (zmq/poll {:timeout 100}))))))

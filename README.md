@@ -283,9 +283,23 @@ For example:
         (println "no msg received on socket-a")))))
 ```
 
+#### Low-level polling API
+
+In more complex use cases, it sometimes makes sense to set up multiple pollers
+and poll them conditionally. ezzmq has a lower-level API for such use cases.
+
+For details, see the [`lbbroker`
+example](https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/identity.boot)
+and the docstrings for `poller`, `polling?` and `poll` in the `ezzmq.poll`
+namespace.
+
 ## Contributing
 
-If you like the direction I'm going with this library and you have things you'd like to do with it that it currently can't do, please [file an issue](https://github.com/daveyarwood/ezzmq/issues) and we'll figure it out together. I want ezzmq to be an awesome and sensible way to build ZeroMQ apps in Clojure.
+If you like the direction I'm going in with this library and you have things
+you'd like to do with it that it currently can't do, please [file an
+issue](https://github.com/daveyarwood/ezzmq/issues) and we'll figure it out
+together. I want ezzmq to be an awesome and sensible way to build ZeroMQ apps in
+Clojure.
 
 ## License
 

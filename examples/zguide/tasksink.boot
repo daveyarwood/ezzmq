@@ -1,6 +1,6 @@
 #!/usr/bin/env boot
 
-(set-env! :dependencies '[[io.djy/ezzmq "0.7.2"]])
+(set-env! :dependencies '[[io.djy/ezzmq "0.8.0"]])
 
 (require '[ezzmq.core :as zmq])
 
