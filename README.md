@@ -191,7 +191,7 @@ Sometimes you want to handle messages coming from multiple sockets at once. The 
 This is pretty ugly, but nothing we can't abstract away. In ezzmq it works like this:
 
 ```clojure
-(zmq/polling {:stringify true}
+(zmq/polling {:receive-opts {:stringify true}}
   [socket-a :pollin [msg]
    (println "Received msg:" msg)
 
@@ -205,7 +205,7 @@ This is pretty ugly, but nothing we can't abstract away. In ezzmq it works like 
    (throw (Exception. "SOCKET D HAS GONE ROGUE"))]
 
   (zmq/while-polling
-    (zmq/poll 1000)))
+    (zmq/poll {:timeout 1000})))
 ```
 
 #### `polling`
@@ -243,25 +243,28 @@ Here is an example of how to use `polling?` along with additional conditions to 
 
 ```clojure
 (let [running? (atom true)]
-  (zmq/polling {:stringify true}
+  (zmq/polling {:receive-opts {:stringify true}}
     [socket :pollin [msg]
      (if (= ["STOP"] msg)
        (reset! running? false))]
 
     (while (and (zmq/polling?) @running?)
-      (zmq/poll 1000))))
+      (zmq/poll {:timeout 1000}))))
 ```
 
 #### `poll`
 
-`poll` triggers a chain of events where we go through the sockets in order and check to see if there are messages on each one. If there is a message, then the specified handling code for that socket is run.
+`poll` triggers a chain of events where we go through the sockets in order,
+check to see if certain conditions are met, and act accordingly. For example,
+for `:pollin` items, if there is a message to receive, then we receive a message
+and call the provided handling code on the message.
 
 For cases where you need to take certain actions based on which sockets had messages each time you poll, you can use the return value of `ezzmq.core/poll`, which is the set of sockets that had messages.
 
 For example:
 
 ```clojure
-(zmq/polling {:stringify true}
+(zmq/polling {:receive-opts {:stringify true}}
   [socket-a :pollin [msg]
    (println "Received msg:" msg)
 
@@ -275,7 +278,7 @@ For example:
    (throw (Exception. "SOCKET D HAS GONE ROGUE"))]
 
   (zmq/while-polling
-    (let [got-msgs (zmq/poll 1000)]
+    (let [got-msgs (zmq/poll {:timeout 1000})]
       (when-not (contains? got-msgs socket-a)
         (println "no msg received on socket-a")))))
 ```

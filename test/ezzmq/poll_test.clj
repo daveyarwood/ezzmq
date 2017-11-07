@@ -44,15 +44,15 @@
       (testing "can poll two sockets"
         (let [msgs  (atom #{})
               tally (atom {sub 0, pull 0})]
-          (zmq/polling {:stringify true}
+          (zmq/polling {:receive-opts {:stringify true}}
             [sub :pollin [msg]
              (do
-               ; (println "CLIENT: Received msg:" msg)
+               ;; (println "CLIENT: Received msg:" msg)
                (swap! msgs conj (Integer/parseInt (first msg))))
 
              pull :pollin [msg]
              (do
-               ; (println "CLIENT: Received msg:" msg)
+               ;; (println "CLIENT: Received msg:" msg)
                (swap! msgs conj (Integer/parseInt (first msg))))]
             (while (< (count @msgs) 100)
               (let [got-msgs (zmq/poll)]
