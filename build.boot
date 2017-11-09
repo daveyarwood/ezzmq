@@ -107,7 +107,9 @@
    ["rtdealer"
     [["rtdealer" :ports '[a] :args [5]]]]
    ["lbbroker"
-    [["lbbroker" :args [5 10]]]]])
+    [["lbbroker" :args [5 10]]]]
+   ["asyncsrv"
+    [["asyncsrv" :ports '[a] :args [5 5]]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
