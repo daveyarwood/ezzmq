@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 0.8.1 (2017-11-09)
+
+* `with-context` and `with-new-context` now return the value of the last form
+  contained in their scope, as one might expect.
+
+  For example:
+
+  ```clojure
+  (zmq/with-new-context
+    (let [socket (zmq/socket :req {:connect ...})]
+      (zmq/receive-msg socket {:stringify true})))
+  ```
+
+  The form above will now return the message received on the socket.
+
 ## 0.8.0 (2017-11-05)
 
 * For greater flexibility when using pollers, some of the implementation of the

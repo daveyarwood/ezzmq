@@ -86,8 +86,9 @@
   [ctx & body]
   `(binding [*context* ~ctx]
      (init-context! *context*)
-     ~@body
-     (shut-down-context! *context*)))
+     (let [result# (do ~@body)]
+       (shut-down-context! *context*)
+       result#)))
 
 (defmacro with-new-context
   "Executes `body` using a one-off ZMQ context.
