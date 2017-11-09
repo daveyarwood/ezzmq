@@ -4,11 +4,6 @@
 
 (require '[ezzmq.core :as zmq])
 
-;; NB: Like I saw with the mtserver example, fair-queuing does not seem to be
-;; working in JeroMQ. I'm seeing the same one worker receive all of the
-;; messages, while the other workers just sit there waiting to receive a
-;; message.
-
 (def ^:const BACKEND-ADDRESS "inproc://backend")
 
 (defn random-id
