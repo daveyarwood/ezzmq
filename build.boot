@@ -109,7 +109,11 @@
    ["lbbroker"
     [["lbbroker" :args [5 10]]]]
    ["asyncsrv"
-    [["asyncsrv" :ports '[a] :args [5 5]]]]])
+    [["asyncsrv" :ports '[a] :args [5 5]]]]
+   ["peering1"
+    [["peering1" :args ["foo" "bar" "baz"]]
+     ["peering1" :args ["bar" "baz" "foo"]]
+     ["peering1" :args ["baz" "foo" "bar"]]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
