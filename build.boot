@@ -113,7 +113,11 @@
    ["peering1"
     [["peering1" :args ["foo" "bar" "baz"]]
      ["peering1" :args ["bar" "baz" "foo"]]
-     ["peering1" :args ["baz" "foo" "bar"]]]]])
+     ["peering1" :args ["baz" "foo" "bar"]]]]
+   ["peering2"
+    [["peering2" :args ["foo" 3 3 3000 "bar" "baz"]]
+     ["peering2" :args ["bar" 3 3 3000 "baz" "foo"]]
+     ["peering2" :args ["baz" 3 3 3000 "foo" "bar"]]]]])
 
 (def examples-map (delay (into {} all-examples)))
 
