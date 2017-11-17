@@ -18,6 +18,10 @@
 ;; - Some bug in the routing logic in JeroMQ.
 ;; - Some weirdness around using IPC with JeroMQ. (Of note, the README says that
 ;;   IPC only works if everyone is using JeroMQ, but that is the case here.)
+;;
+;; NB: This might be related: https://github.com/zeromq/jeromq/issues/452
+;;     A fix is coming soon in JeroMQ 0.4.3.
+;; TODO: Try ezzmq with JeroMQ 0.4.3 and see if that fixes it.
 
 (defn start-client
   [frontend-address log-fn]
