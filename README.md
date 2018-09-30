@@ -289,7 +289,7 @@ In more complex use cases, it sometimes makes sense to set up multiple pollers
 and poll them conditionally. ezzmq has a lower-level API for such use cases.
 
 For details, see the [`lbbroker`
-example](https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/identity.boot)
+example](https://github.com/daveyarwood/ezzmq/blob/master/examples/zguide/lbbroker.boot)
 and the docstrings for `poller`, `polling?` and `poll` in the `ezzmq.poll`
 namespace.
 
