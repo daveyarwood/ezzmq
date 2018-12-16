@@ -1,10 +1,10 @@
 (set-env!
   :source-paths #{"src"}
   :resource-paths #{"test"}
-  :dependencies '[[org.clojure/clojure "1.8.0"]
-                  [org.zeromq/jeromq   "0.4.2"]
+  :dependencies '[[org.clojure/clojure "1.9.0"]
+                  [org.zeromq/jeromq   "0.4.3"]
                   [clj-wallhack        "1.0.1"]
-                  [potemkin            "0.4.4"]
+                  [potemkin            "0.4.5"]
                   [adzerk/bootlaces    "0.1.13" :scope "test"]
                   [adzerk/boot-test    "1.2.0"]])
 
@@ -153,8 +153,7 @@
    ansi/magenta
    ansi/cyan
    ansi/white
-   #_ansi/black ;; impossible to see on a black background
-   ])
+   #_ansi/black]) ;; impossible to see on a black background
 
 (defn run-process
   [[color-fn process command] timeout-ms]
