@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.8.2 (2018-12-15)
+
+* Upgraded dependencies:
+  * Clojure 1.8.0 => 1.9.0
+  * JeroMQ 0.4.2 => 0.4.3
+  * Potemkin 0.4.4 => 0.4.5
+
 ## 0.8.1 (2017-11-09)
 
 * `with-context` and `with-new-context` now return the value of the last form
